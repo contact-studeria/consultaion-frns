@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Consultation fournisseurs &mdash; Studeria</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+
+:root {
+  --purple: #7b1ad5;
+  --violet: #a155f8;
+  --light: #e8bbff;
+  --ultralight: #f5dcff;
+  --ink: #0f0038;
+  --soft: #4a4a6a;
+  --muted: #8888a8;
+  --surface: #ffffff;
+  --white: #ffffff;
+  --teal: #06B6D4;
+  --amber: #F59E0B;
+  --rose: #F43F5E;
+  --emerald: #10B981;
+  --blue: #3B82F6;
+  --border: #dbd9e1;
+  --radius: 12px;
+  --rlg: 20px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--ink);
+  background: var(--surface);
+  line-height: 1.75;
+}
+
+.sidebar {
+  position: fixed; top: 0; left: 0;
+  width: 280px; height: 100vh;
+  background: var(--ink);
+  padding: 24px 16px;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform .3s;
+}
+.sidebar .logo { font-size: 19px; color: #fff; font-weight: 700; }
+.sidebar .sub {
+  font-size: 10px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 2px;
+  margin: 4px 0 20px;
+}
+.nav-section {
+  font-size: 10px; color: var(--violet);
+  text-transform: uppercase; letter-spacing: 1.5px;
+  padding: 12px 13px 4px; font-weight: 700;
+}
+.sidebar a {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 13px; margin-bottom: 2px;
+  color: rgba(255,255,255,.5);
+  text-decoration: none; font-size: 12.5px; font-weight: 500;
+  border-radius: 7px; transition: .2s;
+}
+.sidebar a:hover, .sidebar a.active { background: rgba(123,26,213,.2); color: #fff; }
+.sidebar .n { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--violet); min-width: 18px; }
+.sidebar .div { height: 1px; background: rgba(255,255,255,.06); margin: 10px 0; }
+
+.toggle {
+  display: none; position: fixed; top: 12px; left: 12px; z-index: 200;
+  background: var(--purple); color: #fff; border: none;
+  border-radius: 8px; padding: 8px 12px; font-size: 18px; cursor: pointer;
+}
+
+.main { margin-left: 280px; min-height: 100vh; }
+
+.hero {
+  background: linear-gradient(135deg, #0f0038 0%, #7b1ad5 50%, #e08aff 100%);
+  padding: 80px 50px 65px;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: ''; position: absolute; top: -40%; right: -15%;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(123,26,213,.3), transparent 70%);
+  border-radius: 50%;
+}
+.hero::after {
+  content: ''; position: absolute; bottom: -25%; left: 8%;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(224,138,255,.15), transparent 70%);
+  border-radius: 50%;
+}
+.hero-c { position: relative; z-index: 1; max-width: 720px; }
+.badge {
+  display: inline-block;
+  background: rgba(123,26,213,.3); color: var(--light);
+  padding: 5px 14px; border-radius: 20px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1.2px; text-transform: uppercase;
+  margin-bottom: 18px;
+  border: 1px solid rgba(123,26,213,.4);
+}
+.hero h1 {
+  font-size: clamp(30px, 4.5vw, 48px);
+  color: #fff; font-weight: 700; line-height: 1.15;
+  margin-bottom: 14px;
+}
+.hero h1 em { color: var(--teal); font-style: normal; }
+.hero-c > p {
+  font-size: 16px; color: rgba(255,255,255,.65);
+  max-width: 560px; margin-bottom: 24px;
+}
+.hero-tags { display: flex; gap: 16px; flex-wrap: wrap; }
+.hero-tags span { display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,.45); font-size: 12px; }
+.hero-tags .ic {
+  width: 28px; height: 28px;
+  background: rgba(255,255,255,.07); border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+
+.content { max-width: 840px; margin: 0 auto; padding: 50px 32px 100px; }
+
+.ch { margin-bottom: 56px; scroll-margin-top: 20px; }
+.ch-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.ch-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; font-weight: 600;
+  color: var(--purple); background: var(--light);
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 9px; flex-shrink: 0;
+}
+.ch h2 { font-size: 24px; font-weight: 700; }
+
+.card {
+  background: var(--white); border-radius: var(--rlg);
+  padding: 32px;
+  box-shadow: 0 4px 16px rgba(123,26,213,.06);
+  border: 1px solid var(--border);
+}
+.card p { margin-bottom: 14px; color: var(--soft); font-size: 15px; }
+.card p:last-child { margin-bottom: 0; }
+.card strong { color: var(--ink); font-weight: 600; }
+.card h3 {
+  font-size: 19px; font-weight: 600; color: var(--ink);
+  margin: 26px 0 10px; padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.card h3:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.card h4 { font-size: 14px; font-weight: 700; color: var(--purple); margin: 18px 0 6px; }
+.card ul { margin: 0 0 14px 20px; color: var(--soft); font-size: 15px; }
+.card li { margin-bottom: 4px; }
+
+.analogy {
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin: 18px 0; border-left: 4px solid var(--amber);
+}
+.analogy .al { font-weight: 700; color: #92400E; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.analogy p { font-size: 14px; color: #78350F; margin: 0; }
+
+.prereq {
+  background: linear-gradient(135deg, #DBEAFE, #BFDBFE);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin: 18px 0; border-left: 4px solid var(--blue);
+}
+.prereq .pl { font-weight: 700; color: #1E40AF; font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.prereq p, .prereq li { font-size: 14px; color: #1E3A5F; margin: 0; }
+.prereq ul { list-style: none; padding: 0; margin: 6px 0 0; }
+.prereq li { padding: 4px 0 4px 20px; position: relative; }
+.prereq li::before { content: '\2611'; position: absolute; left: 0; }
+
+.warning-big {
+  background: linear-gradient(135deg, #FEE2E2, #FECACA);
+  border-radius: var(--radius); padding: 20px 24px;
+  margin: 18px 0; border-left: 4px solid var(--rose);
+}
+.warning-big .wl { font-weight: 700; color: #991B1B; font-size: 13px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.warning-big p { font-size: 14px; color: #7F1D1D; margin: 0; }
+
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 16px 0; }
+.steps li {
+  counter-increment: s; position: relative;
+  padding: 14px 14px 14px 50px; margin-bottom: 8px;
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--border);
+  font-size: 14px; color: var(--soft); transition: .15s;
+}
+.steps li:hover { transform: translateX(2px); box-shadow: 0 2px 8px rgba(123,26,213,.05); }
+.steps li::before {
+  content: counter(s); position: absolute;
+  left: 12px; top: 50%; transform: translateY(-50%);
+  width: 24px; height: 24px;
+  background: var(--purple); color: #fff;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.steps li strong { color: var(--ink); }
+
+.mock {
+  background: #0f0038; border-radius: var(--radius);
+  overflow: hidden; margin: 20px 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,.18);
+  border: 1px solid rgba(255,255,255,.05);
+}
+.mock-bar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 9px 12px; background: rgba(0,0,0,.3);
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; }
+.dot.r { background: #ff5f57; }
+.dot.y { background: #ffbd2e; }
+.dot.g { background: #28c840; }
+.mock-url { margin-left: 12px; font-size: 10.5px; color: rgba(255,255,255,.3); font-family: 'JetBrains Mono', monospace; }
+.mock-body { padding: 16px; min-height: 120px; }
+
+.tw { overflow-x: auto; margin: 16px 0; border-radius: var(--radius); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead { background: var(--ink); }
+thead th { padding: 11px 14px; text-align: left; color: #fff; font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .4px; }
+tbody td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--soft); vertical-align: top; }
+tbody tr:nth-child(even) { background: var(--ultralight); }
+
+.tip { display: flex; gap: 12px; padding: 16px 20px; border-radius: var(--radius); margin: 16px 0; border-left: 4px solid; }
+.tip.info { background: #EFF6FF; border-color: var(--blue); }
+.tip.ok { background: #ECFDF5; border-color: var(--emerald); }
+.tip.warn { background: #FFFBEB; border-color: var(--amber); }
+.tip.err { background: #FFF1F2; border-color: var(--rose); }
+.tip-i { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+.tip-c { font-size: 13.5px; color: var(--soft); }
+.tip-c strong { color: var(--ink); display: block; margin-bottom: 2px; }
+
+.vg { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin: 16px 0; }
+.vc { background: var(--white); border-radius: var(--radius); padding: 16px; border: 1px solid var(--border); transition: .15s; }
+.vc:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(123,26,213,.07); }
+.vc .vt { font-weight: 700; color: var(--purple); font-size: 13.5px; margin-bottom: 3px; }
+.vc .vd { font-size: 12.5px; color: var(--soft); }
+.vc .ve { font-size: 11.5px; color: var(--muted); margin-top: 4px; font-style: italic; }
+
+.flow { display: flex; align-items: center; gap: 0; margin: 20px 0; flex-wrap: wrap; justify-content: center; }
+.flow-node { background: var(--white); border: 2px solid var(--border); border-radius: 14px; padding: 12px 18px; text-align: center; min-width: 120px; transition: .15s; }
+.flow-node:hover { border-color: var(--purple); box-shadow: 0 4px 14px rgba(123,26,213,.08); }
+.flow-node .fl { font-size: 22px; margin-bottom: 4px; }
+.flow-node .fn2 { font-weight: 700; font-size: 12.5px; color: var(--ink); }
+.flow-node .fd { font-size: 10.5px; color: var(--muted); }
+.flow-node.trigger { border-color: var(--emerald); background: #ECFDF5; }
+.flow-node.action { border-color: var(--blue); background: #EFF6FF; }
+.flow-node.ai { border-color: var(--purple); background: var(--ultralight); }
+.flow-arrow { font-size: 22px; color: var(--muted); padding: 0 6px; flex-shrink: 0; }
+
+.code {
+  background: #0f0038; color: #e2e8f0;
+  padding: 14px 18px; border-radius: var(--radius);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px; margin: 12px 0;
+  overflow-x: auto; line-height: 1.6;
+}
+.code .cm { color: #6b7280; }
+.code .kw { color: var(--teal); }
+.code .str { color: #fbbf24; }
+
+.annotated { background: var(--ultralight); border: 1px solid rgba(123,26,213,.1); border-radius: var(--radius); padding: 24px; margin: 18px 0; }
+.annotated .caption { font-size: 11.5px; color: var(--muted); text-align: center; margin-top: 10px; font-style: italic; }
+
+.task-list { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; padding: 16px; background: var(--ultralight); border-radius: var(--radius); }
+.task-list div { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--soft); }
+
+.footer { text-align: center; padding: 36px; color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--border); margin-top: 36px; }
+
+@media (max-width: 800px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .toggle { display: block; }
+  .main { margin-left: 0; }
+  .hero { padding: 70px 20px 45px; }
+  .content { padding: 28px 16px 60px; }
+  .card { padding: 22px; }
+  .flow { flex-direction: column; }
+  .flow-arrow { transform: rotate(90deg); }
+}
+
+@media print {
+  .sidebar, .toggle, .hero { display: none !important; }
+  .main { margin-left: 0 !important; }
+  .ch { break-inside: avoid; }
+  .card { box-shadow: none !important; border: 1px solid #ddd; }
+}
+
+
+/* ================= MODELE V3 ================= */
+:root{--accent:#3B82F6;--accent-soft:#bfdbfe;--em:#FDE68A}
+.progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:300;
+  background:linear-gradient(90deg,var(--purple),var(--accent));transition:width .1s linear}
+
+.sidebar .brand{display:flex;align-items:center;gap:11px;margin-bottom:20px}
+.sidebar .brand img{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0;
+  border:2px solid var(--accent);box-shadow:0 0 0 4px rgba(255,255,255,.07)}
+.sidebar .brand .bt{min-width:0}
+.sidebar .brand .logo{font-size:14.5px;line-height:1.25;margin:0}
+.sidebar .brand .sub{margin:2px 0 0;letter-spacing:.8px;font-size:9.5px;white-space:nowrap;color:var(--accent)}
+.nav-section{color:var(--accent)}
+.sidebar .n{color:var(--accent)}
+.sidebar a{position:relative}
+.sidebar a:hover,.sidebar a.active{background:rgba(255,255,255,.08);color:#fff}
+.sidebar a.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;
+  border-radius:0 3px 3px 0;background:var(--accent)}
+
+/* --- hero --- */
+.hero{padding:58px 50px 54px;
+  background:linear-gradient(118deg,#0f0038 0%,var(--purple) 34%,var(--accent) 88%)}
+.hero::before{top:-30%;right:-10%;width:560px;height:560px;
+  background:radial-gradient(circle,rgba(59,130,246,.55),transparent 68%)}
+.hero::after{bottom:-34%;left:-8%;width:480px;height:480px;
+  background:radial-gradient(circle,rgba(59,130,246,.32),transparent 70%)}
+.hero-grid{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);
+  background-size:52px 52px;
+  -webkit-mask-image:radial-gradient(ellipse at 30% 50%,#000 10%,transparent 72%);
+  mask-image:radial-gradient(ellipse at 30% 50%,#000 10%,transparent 72%)}
+.hero-inner{position:relative;z-index:1;max-width:1120px;margin:0 auto;
+  display:flex;align-items:center;gap:44px}
+.hero-inner>.hero-c{flex:1 1 520px;min-width:0;max-width:600px}
+.hero h1 em{color:var(--em);font-style:normal}
+.hero h1{margin-bottom:12px}
+.hero-c>p{margin-bottom:18px}
+.hero-visual{flex:0 1 370px;min-width:0;position:relative;align-self:center;
+  display:flex;align-items:flex-end;justify-content:center}
+.hero-visual::before{content:'';position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);width:330px;height:330px;max-width:96%;
+  aspect-ratio:1;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.22),rgba(255,255,255,.06) 58%,transparent 70%);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:inset 0 0 60px rgba(255,255,255,.10)}
+.hero-visual::after{content:'';position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);width:400px;height:400px;max-width:115%;
+  aspect-ratio:1;border-radius:50%;border:1px dashed rgba(255,255,255,.14);
+  animation:spin 46s linear infinite}
+.hero-visual img{position:relative;z-index:1;width:340px;max-width:100%;display:block;
+  filter:drop-shadow(0 22px 40px rgba(0,0,0,.45));animation:floaty 7s ease-in-out infinite}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+
+/* --- bandeau logos du hero --- */
+.hero-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:18px 0 22px}
+.hero-tools .hl{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;
+  color:rgba(255,255,255,.82);font-weight:700;margin-right:4px}
+.hero-tools .ht{display:inline-flex;align-items:center;gap:7px;
+  background:#fff;border:1px solid rgba(255,255,255,.7);
+  border-radius:999px;padding:6px 14px 6px 10px;font-size:12.5px;font-weight:600;
+  color:#1b1040;box-shadow:0 4px 14px rgba(15,0,56,.22)}
+.hero-tools .ht svg{display:block;flex-shrink:0}
+.hero-tools .ht .ltr{box-shadow:none}
+
+/* lisibilite du bandeau d'informations */
+.hero-tags{gap:14px 20px}
+.hero-tags span{color:rgba(255,255,255,.92);font-size:12.5px;font-weight:500}
+.hero-tags .ic{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.22)}
+.badge{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.3);color:#fff}
+.hero-c>p{color:rgba(255,255,255,.88)}
+
+/* --- cartes connecteurs --- */
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;margin:18px 0}
+.tool{display:flex;gap:13px;background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius);padding:15px 16px;transition:.15s}
+.tool:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(123,26,213,.10)}
+.tico{width:40px;height:40px;border-radius:11px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center}
+.tname{font-size:14px;font-weight:700;color:var(--ink);display:flex;align-items:center;
+  gap:7px;flex-wrap:wrap;line-height:1.3}
+.mcp{font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;
+  padding:2px 7px;border-radius:5px;background:#ECFDF5;color:#047857;border:1px solid #a7f3d0}
+.mcp.no{background:#FFF7ED;color:#9A3412;border-color:#fed7aa}
+.tdesc{font-size:12.5px;color:var(--soft);margin-top:4px;line-height:1.55}
+.ltr{display:inline-flex;align-items:center;justify-content:center;border-radius:6px;
+  color:#fff;font-weight:700;font-size:12px;font-family:'Inter',sans-serif}
+
+/* --- sommaire --- */
+.toc{margin:-18px 0 44px}
+.toc-t{font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--muted);
+  font-weight:700;margin-bottom:12px}
+.toc-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(228px,1fr));gap:10px}
+.toc-g a{display:flex;align-items:center;gap:10px;text-decoration:none;background:#fff;
+  border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;transition:.15s}
+.toc-g a:hover{border-color:var(--accent);transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(123,26,213,.10)}
+.toc-g .tn{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:700;
+  color:#fff;background:linear-gradient(135deg,var(--purple),var(--accent));border-radius:7px;
+  width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.toc-g .tt{font-size:13px;font-weight:600;color:var(--ink);line-height:1.35}
+
+/* --- chapitres --- */
+.ch{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.ch.vis{opacity:1;transform:none}
+.ch-head{padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:22px}
+.ch-num{width:36px;height:36px;font-size:12px;color:#fff;
+  background:linear-gradient(135deg,var(--purple),var(--accent));
+  box-shadow:0 4px 12px rgba(123,26,213,.28)}
+.ch h2{font-size:25px;letter-spacing:-.3px}
+.card{box-shadow:0 6px 22px rgba(123,26,213,.07)}
+
+/* --- mascotte dans les conseils --- */
+.tip{position:relative}
+.tip-av{width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;
+  border:2px solid #fff;box-shadow:0 2px 8px rgba(15,0,56,.18)}
+
+/* --- bouton copier --- */
+.codewrap{position:relative;margin:12px 0}
+.codewrap .code{margin:0;padding-right:96px}
+.copybtn{position:absolute;top:10px;right:10px;z-index:2;cursor:pointer;
+  border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.10);color:#fff;
+  border-radius:8px;padding:5px 11px;font-size:11.5px;font-weight:600;
+  font-family:'Inter',sans-serif;transition:.15s}
+.copybtn:hover{background:rgba(255,255,255,.2)}
+.copybtn.done{background:#10B981;border-color:#10B981}
+
+/* --- quiz --- */
+.quiz{display:flex;flex-direction:column;gap:14px;margin:18px 0}
+.q{border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;background:#fff}
+.q .qq{font-size:14.5px;font-weight:700;color:var(--ink);margin-bottom:12px}
+.q .qq .qn{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent);margin-right:8px}
+.q button.opt{display:block;width:100%;text-align:left;cursor:pointer;
+  background:#fff;border:1px solid var(--border);border-radius:9px;
+  padding:10px 14px;margin-bottom:7px;font-size:13.5px;color:var(--soft);
+  font-family:'Inter',sans-serif;transition:.15s}
+.q button.opt:hover{border-color:var(--accent);background:#fcfaff}
+.q button.opt.good{background:#ECFDF5;border-color:#10B981;color:#065F46;font-weight:600}
+.q button.opt.bad{background:#FFF1F2;border-color:#F43F5E;color:#9F1239}
+.q .exp{display:none;font-size:13px;color:var(--soft);background:var(--ultralight);
+  border-radius:9px;padding:11px 14px;margin-top:6px}
+.q.answered .exp{display:block}
+.qscore{font-size:13.5px;font-weight:700;color:var(--ink);background:var(--ultralight);
+  border-radius:var(--radius);padding:13px 18px;text-align:center}
+
+/* --- retour en haut --- */
+.top{position:fixed;right:22px;bottom:22px;z-index:200;width:42px;height:42px;
+  border:none;border-radius:50%;cursor:pointer;color:#fff;font-size:17px;
+  background:linear-gradient(135deg,var(--purple),var(--accent));
+  box-shadow:0 6px 18px rgba(123,26,213,.35);
+  opacity:0;pointer-events:none;transition:opacity .25s}
+.top.show{opacity:1;pointer-events:auto}
+
+@media (max-width:1100px){
+  .hero-visual{flex:0 1 280px}
+  .hero-visual img{width:260px}
+  .hero-visual::before{width:250px;height:250px}
+  .hero-visual::after{width:305px;height:305px}
+}
+@media (max-width:900px){
+  .hero{padding:64px 20px 44px}
+  .hero-inner{flex-direction:column;align-items:flex-start;gap:14px}
+  .hero-visual{flex:none;align-self:center}
+  .hero-visual img{width:230px;max-width:62vw}
+  .hero-visual::before{width:230px;height:230px}
+  .hero-visual::after{width:275px;height:275px}
+  .hero-grid{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero-visual img{animation:none}
+  .ch{opacity:1;transform:none;transition:none}
+}
+@media print{.progress,.top,.copybtn{display:none!important}}
+
+.toolico{border-radius:5px;vertical-align:middle;object-fit:contain}
+.kitbox{border:1px solid var(--border);border-radius:var(--rlg);padding:18px 20px;margin:18px 0;background:var(--ultralight)}
+.kitbox .kl{font-weight:700;color:var(--purple);margin-bottom:6px}
+.kitbox ol{margin:8px 0 0 18px}.kitbox li{margin:6px 0}
+.filelink{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:13px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 12px;text-decoration:none;color:var(--purple);word-break:break-all}
+</style>
+</head>
+<body>
+<div class="progress"></div>
+
+<button class="toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">&#9776;</button>
+
+<nav class="sidebar">
+  <div class="brand"><img src="data:image/jpeg;base64,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" alt=""><div class="bt"><div class="logo">&#128218; Agent Consultation fournisseurs</div><div class="sub">Kit Achats &middot; Studeria</div></div></div>
+
+  <div class="nav-section">&#127937; D&eacute;couvrir</div>
+  <a href="#ch0"><span class="n">00</span>&Agrave; quoi sert cet agent</a>
+  <a href="#ch1"><span class="n">01</span>Ce qu'il produit</a>
+
+  <div class="div"></div>
+
+  <div class="nav-section">&#129513; Comprendre</div>
+  <a href="#ch2"><span class="n">02</span>Les 4 briques d'un agent</a>
+
+  <div class="div"></div>
+
+  <div class="nav-section">&#128295; Installer</div>
+  <a href="#ch3"><span class="n">03</span>Le prompt d'initialisation</a>
+  <a href="#ch4"><span class="n">04</span>Connecter vos outils</a>
+
+  <div class="div"></div>
+
+  <div class="nav-section">&#9889; Utiliser</div>
+  <a href="#ch5"><span class="n">05</span>Le lancer &agrave; la main</a>
+  <a href="#ch6"><span class="n">06</span>Le mettre en automatique</a>
+
+  <div class="div"></div>
+
+  <div class="nav-section">&#127891; Ma&icirc;triser</div>
+  <a href="#ch7"><span class="n">07</span>Ce qu'il ne fait pas</a>
+  <a href="#ch8"><span class="n">08</span>Si &ccedil;a ne marche pas</a>
+  <a href="#ch9"><span class="n">09</span>R&eacute;cap et exercices</a>
+  <a href="#ch10"><span class="n">10</span>Quiz de fin</a>
+</nav>
+
+<div class="main">
+
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+  <div class="hero-c">
+    <span class="badge">&#128214; Guide agent Studeria &middot; D&eacute;butant</span>
+    <h1>Votre agent de <em>consultation fournisseurs</em></h1>
+    <p>Un cahier des charges unique envoy&eacute; &agrave; tous les fournisseurs, le suivi des r&eacute;ponses et des relances, puis les devis ramen&eacute;s &agrave; un p&eacute;rim&egrave;tre commun, poste par poste. Pour comparer des offres, et non des totaux.</p>
+    <div class="hero-tools"><span class="hl">Se branche avec</span><span class="ht"><img class="toolico" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAEkklEQVR4Ae2ZA5BkSRRFc23bv7H2Fta72V7btm3bDq3tsdkY27b9a9xmTr6IyXB0Z1W/6j8/+56IGzOB1jsdpzp+CQMAAAAAAAAAAAAAAACAEZ53xvDMoz8ekXXMqBGZxyyiDc88pnhExjHvj/S8E0Q7pW7gTtH64h0/ry/ZcVhDyQ6LaPT/+tIdX68ZtEu2aC2js484Uh+7l55qZvUjM4/+btBxhx8o2gnVg3b16kp2+k8fWzU3LeQ3NUjsK1JB/8ZfoI+7QU9ZLjHS84qE4+ij3qyPW66nLLesdsDOyVViZNaR2Toxq+iwyY6yNEiKHYVjqEFi14biHb6joyY7naRZapCwL8TW1qtUR68PYz3vUOEI1HN9yEl6KtVRsoQNw7I9aQ7ZSgmr9GtDnvPJsV+91QuzPl4nPcW1NXmRd5WUoUvSIil3XXvVGX/T8bhGfzHZCJjGKcDPi6lEXqzYl7HQJMmXZ2Xr73uSHh2Oc71sBFQzCzBbtbogts0nSX+fN/t58XL6nrkF0IuxjQCVJgG0+kRu9G2eJPEnJ5Ef/c58r9wCzIIWwJwk/uS4LoA1SfzJcV8Aa5L4k+O+AIYk8SYHAhiSxJAcCEh3knx58p768/9kvhYEtGGSVhdGT/FzY9Poc2/zAp58oMvYYVlZAQngT5LOzd0mOUEKqCzeRd3fRY4ULZH7YYW6+cVJS/qeenYAAtiSZJLzm/lcQQpYNGAfVdjh8uXR/69XVgJol7zrV/1+0W0sAhg2aJ08+8j0J4dfQL8+x6hzO1xbQ8dPSoDZezd+oShJAQugJdbkx4v4k8MvwCTnw+4RZQ6fsgDag48Xq/6nRBgEMCw39jEliS85/AIoObd2yqeD8wigXf36YvXnBTdzCGBYfBgliSE57AIoORd1uJqOzSuAlv/BRvXB9Z9RkngEMCSp2eQwrBXJ4Rdgdt+TgxT9lWQpINRrZXL4BZhd8dYyRX8luS/APjn8Aiz2zk3fUJJcFWCbnOAE0O55aiglyUUBFskJXIBJ0opGSpJjAmyTE7wAs7dv/qaRkuSUAPvkBC+AdssLkxOUJFcEUHKu71RYRQcMhQBawQcbN/4s75kfdgFde2cuOuf/66rpeKESYEZPM+mpZgiPX53Iiz5sDhdaAUJDz/Xp+X5ojp8fn+cXxM4QGicEEPQOF73TFQIB/9GDPUG4JICgp5j8SeJNjjC4KIDgTxJvctwXwJ8k1uS4L4A/SazJcV8AZ5IYkgMBDEliSA4EpD9J8XK9+4UBAtouSfR+Mb1vLAgIaPMk/WafHAjgSpJJzt3CAAGpk8iPSn3UZezJgQB7VsrIgfq4/ZJNDgQw4+fGX6YkWScHAvjx8yMXUJIYkgMBDEliTQ4E8AMBEAABEAABEAABEAABEAABEAABQQEBEDDLQkDlPAhIk4D/rv+rZQEflL8PAekREPv/httFS8h3NuyrD7eMUwAE0PGv7yVskR9tPiHvw4pJbAIgYFqs442HimSQ76gd9evB6zkfVg7T/5ZDQGqHj3S47nn52z27CgAAAAAAAAAAAAAAAAAAtFu2AJlqODQM4+yVAAAAAElFTkSuQmCC" width="18" height="18" alt="">Gmail</span><span class="ht"><img class="toolico" src="data:image/png;base64,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" width="18" height="18" alt="">Google Drive</span><span class="ht"><img class="toolico" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAMAAADVRocKAAAAWlBMVEUAAABAv0A0p1I0qFMzqFM0qFMXgTc1qlU0qFMYgDg0qFM0p1M0qFP///+Z06k0qFM0qFM0p1M1p1Q1qFQwr1A0qVM1qFMzplM0qFM0qFM0p1I0qFMzqVJAn2C6RdwUAAAAHnRSTlMABGO73/9vGM//v2vv///X26ODWxDjsyjTe8PzcwhvOvRjAAAAv0lEQVR4Ae3TQQIBQQxE0YYUBQAA978my9lNpAWof4G3+uUTU51ur2+OUGINhuaLQWFkzhgTxuaNMaHnB2LCxA/EBHsMILIBIhsgsgEiGyCyASIbILIBIhsgsgEiGyCyASIbILIBIhsg0gC/YJUJECBAwLOBqTMB3w5Yo9n03swaCRBQD2g0AfrgUwEBOllAOAECBAgQIECAv3krsLCqlq3AyqpatwKbrVW0K+3thxbuMCiOOsfT2SIdLtfygakbsF6H8/pufmQAAAAASUVORK5CYII=" width="18" height="18" alt="">Google Sheets</span><span class="ht"><img class="toolico" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAMAAADVRocKAAABGlBMVEUAAABAgP9DhvVBhvRChfRChfQZZ9IZZ9EZaNMYZtNAivRDhfQaZ9IVatVBhvQZaNJDhfMZaNEaZ9FChfQZZ9L////7vATx9v6myfaCs/Jin+9XmO57rvK41Pj7/f/i7fzG3PmYwPUofOkac+gwgOq00fifxPUhd+l0qvGRu/Tt9P2UvvQleulFjew3heu81vjD2vkzguvp8v34+/7f6/xMku1QlO2GtfMedegsfupTlu5JkO2tzfd/sPKJt/O/2PmNufTX5/s6h+uqy/abwvXJ3vpwqPH0+P4+ieyxz/dtpvBbm+5ene/U5ftlofDN4PoYgDg0qFPqQzXqRDUYgDgXgDgggEAYgDgagDkXgDcAgEAZgTgYgDgYgDg1l7sXAAAAXnRSTlMABGO73///z5tLGM+fDL+7a1Oz79///////////////////////////////////////////////////////////////////////////////////4/bgxDjKM8Ee8PzvzhR0gAAAcJJREFUeAHt1oWu20AQheEppMzthPmEmXOZqQxbhvd/ja59mS1rRhDtbxTtJ1qgWcvlct24eet2JER3TnT33n26rAcPI0eFBmyPHtPFPYlIALandGHPIjKA7Tld1C054AVd1Es54BVdVEQKsMkBDnCAAxzAAYueywEOmEEgFk8kU+lMlk+Wy+djMkC2UIRfqczHVapAXgao4ag6H9RIAlJAE7ZWuwOvLvv1+hADBlUAiSHzaAxgwrbsdA6CwHQeC+wVmwdgpcYibHNCgG24lGO/JADvdwHA8ooccNQEQMx+c635VV6TB9arwAZ7dQesAGQ6AJb4IGFgdaHdgm2ZlYBN+G2xMtAvawHbOzuTImxbSoDXsDkHzI3UAFsBwI4msDsH7MkDw9dNPqgEzIkDayVUY+w3ALAhDrwB8DbLXu8AJMWB93MAxquNRncMW08c4BWc6APLA5zGUaldDYC7e/DrV9TWoo+F5cRWzx0dHTD7wKdzfQ7Yl7MZZcCQLmBIFzCkCxjSBQzpAoZ0AUO6gCFdwJAuYEgXMKQLGLqur+GBQOPTt/BAoPHp+4/wgKEg/fwVFjAUrN9//v4LAxhyuVyz3X/dV4hAn5ff5AAAAABJRU5ErkJggg==" width="18" height="18" alt="">Google Agenda</span></div>
+    <div class="hero-tags"><span><span class="ic">&#127919;</span>Aucun pr&eacute;requis technique</span><span><span class="ic">&#9203;</span>15 minutes de lecture</span><span><span class="ic">&#128736;</span>Configuration en 5 minutes</span><span><span class="ic">&#129302;</span>Kit Achats</span></div>
+  </div>
+  <div class="hero-visual"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzNDAgMzgwIiB3aWR0aD0iMzQwIiBoZWlnaHQ9IjM4MCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJUcm9pcyBkZXZpcyBjb21wYXJlcyBwb3N0ZSBwYXIgcG9zdGUiPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJwZyIgeDE9IjAiIHkxPSIwIiB4Mj0iMCIgeTI9IjEiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNmZmZmZmYiIHN0b3Atb3BhY2l0eT0iLjk4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2Y1ZGNmZiIgc3RvcC1vcGFjaXR5PSIuOSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxmaWx0ZXIgaWQ9InNoIiB4PSItNDAlIiB5PSItNDAlIiB3aWR0aD0iMTgwJSIgaGVpZ2h0PSIxODAlIj4KICAgICAgPGZlRHJvcFNoYWRvdyBkeD0iMCIgZHk9IjkiIHN0ZERldmlhdGlvbj0iMTAiIGZsb29kLWNvbG9yPSIjMGYwMDM4IiBmbG9vZC1vcGFjaXR5PSIuMzQiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KCiAgPCEtLSBjYWhpZXIgZGVzIGNoYXJnZXMgdW5pcXVlLCBlbiBoYXV0IC0tPgogIDxnIGZpbHRlcj0idXJsKCNzaCkiPgogICAgPHJlY3QgeD0iOTYiIHk9IjEyIiB3aWR0aD0iMTQ4IiBoZWlnaHQ9IjU2IiByeD0iMTEiIGZpbGw9IiM3YjFhZDUiLz4KICAgIDxyZWN0IHg9IjExMCIgeT0iMjYiIHdpZHRoPSI5MiIgaGVpZ2h0PSI2IiByeD0iMyIgZmlsbD0iI2ZmZmZmZiIgb3BhY2l0eT0iLjk1Ii8+CiAgICA8cmVjdCB4PSIxMTAiIHk9IjM5IiB3aWR0aD0iMTIwIiBoZWlnaHQ9IjUiIHJ4PSIyLjUiIGZpbGw9IiNmZmZmZmYiIG9wYWNpdHk9Ii42Ii8+CiAgICA8cmVjdCB4PSIxMTAiIHk9IjUwIiB3aWR0aD0iNzYiIGhlaWdodD0iNSIgcng9IjIuNSIgZmlsbD0iI2ZmZmZmZiIgb3BhY2l0eT0iLjYiLz4KICA8L2c+CiAgPHRleHQgeD0iMTcwIiB5PSI4NiIgZm9udC1mYW1pbHk9IkludGVyLHN5c3RlbS11aSxzYW5zLXNlcmlmIiBmb250LXNpemU9IjExLjUiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIG9wYWNpdHk9Ii45MiI+VW4gY2FoaWVyIGRlcyBjaGFyZ2VzPC90ZXh0PgoKICA8IS0tIHRyb2lzIGJyYW5jaGVzIC0tPgogIDxnIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLW9wYWNpdHk9Ii41NSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiPgogICAgPHBhdGggZD0iTTE3MCA5MiB2MTAgcTAgOCAtOCA4IEg1OCBxLTggMCAtOCA4IHY4Ii8+CiAgICA8cGF0aCBkPSJNMTcwIDkyIHYzNCIvPgogICAgPHBhdGggZD0iTTE3MCA5MiB2MTAgcTAgOCA4IDggSDI4MiBxOCAwIDggOCB2OCIvPgogIDwvZz4KCiAgPCEtLSB0cm9pcyBkZXZpcyAtLT4KICA8ZyBmaWx0ZXI9InVybCgjc2gpIj4KICAgIDxyZWN0IHg9IjE0IiB5PSIxMzAiIHdpZHRoPSI5NCIgaGVpZ2h0PSIxMjgiIHJ4PSIxMCIgZmlsbD0idXJsKCNwZykiLz4KICAgIDxyZWN0IHg9IjEyNCIgeT0iMTMwIiB3aWR0aD0iOTQiIGhlaWdodD0iMTI4IiByeD0iMTAiIGZpbGw9InVybCgjcGcpIi8+CiAgICA8cmVjdCB4PSIyMzQiIHk9IjEzMCIgd2lkdGg9Ijk0IiBoZWlnaHQ9IjEyOCIgcng9IjEwIiBmaWxsPSJ1cmwoI3BnKSIvPgogIDwvZz4KCiAgPCEtLSBlbnRldGVzIC0tPgogIDxnIGZvbnQtZmFtaWx5PSJJbnRlcixzeXN0ZW0tdWksc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzBmMDAzOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+CiAgICA8dGV4dCB4PSI2MSIgeT0iMTUwIj5BPC90ZXh0Pjx0ZXh0IHg9IjE3MSIgeT0iMTUwIj5CPC90ZXh0Pjx0ZXh0IHg9IjI4MSIgeT0iMTUwIj5DPC90ZXh0PgogIDwvZz4KICA8ZyBzdHJva2U9IiNkYmQ5ZTEiIHN0cm9rZS13aWR0aD0iMSI+PGxpbmUgeDE9IjI0IiB5MT0iMTU3IiB4Mj0iOTgiIHkyPSIxNTciLz48bGluZSB4MT0iMTM0IiB5MT0iMTU3IiB4Mj0iMjA4IiB5Mj0iMTU3Ii8+PGxpbmUgeDE9IjI0NCIgeTE9IjE1NyIgeDI9IjMxOCIgeTI9IjE1NyIvPjwvZz4KCiAgPCEtLSBsaWduZXMgZGUgcG9zdGVzIDogQSBldCBCIGNvbXBsZXRzLCBDIGEgZGV1eCB0cm91cyAtLT4KICA8Zz4KICAgIDxyZWN0IHg9IjI0IiB5PSIxNjgiIHdpZHRoPSI3NCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0iIzEwQjk4MSIgb3BhY2l0eT0iLjg1Ii8+CiAgICA8cmVjdCB4PSIyNCIgeT0iMTg2IiB3aWR0aD0iNzQiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiMxMEI5ODEiIG9wYWNpdHk9Ii44NSIvPgogICAgPHJlY3QgeD0iMjQiIHk9IjIwNCIgd2lkdGg9Ijc0IiBoZWlnaHQ9IjgiIHJ4PSI0IiBmaWxsPSIjMTBCOTgxIiBvcGFjaXR5PSIuODUiLz4KICAgIDxyZWN0IHg9IjI0IiB5PSIyMjIiIHdpZHRoPSI3NCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0iIzEwQjk4MSIgb3BhY2l0eT0iLjg1Ii8+CgogICAgPHJlY3QgeD0iMTM0IiB5PSIxNjgiIHdpZHRoPSI3NCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0iIzA2QjZENCIgb3BhY2l0eT0iLjg1Ii8+CiAgICA8cmVjdCB4PSIxMzQiIHk9IjE4NiIgd2lkdGg9Ijc0IiBoZWlnaHQ9IjgiIHJ4PSI0IiBmaWxsPSIjMDZCNkQ0IiBvcGFjaXR5PSIuODUiLz4KICAgIDxyZWN0IHg9IjEzNCIgeT0iMjA0IiB3aWR0aD0iNzQiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiMwNkI2RDQiIG9wYWNpdHk9Ii44NSIvPgogICAgPHJlY3QgeD0iMTM0IiB5PSIyMjIiIHdpZHRoPSI3NCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0iIzA2QjZENCIgb3BhY2l0eT0iLjg1Ii8+CgogICAgPHJlY3QgeD0iMjQ0IiB5PSIxNjgiIHdpZHRoPSI3NCIgaGVpZ2h0PSI4IiByeD0iNCIgZmlsbD0iI2ExNTVmOCIgb3BhY2l0eT0iLjgiLz4KICAgIDxyZWN0IHg9IjI0NCIgeT0iMTg2IiB3aWR0aD0iNzQiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0Y0M0Y1RSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI1IDQiLz4KICAgIDxyZWN0IHg9IjI0NCIgeT0iMjA0IiB3aWR0aD0iNzQiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI0Y0M0Y1RSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtZGFzaGFycmF5PSI1IDQiLz4KICAgIDxyZWN0IHg9IjI0NCIgeT0iMjIyIiB3aWR0aD0iNzQiIGhlaWdodD0iOCIgcng9IjQiIGZpbGw9IiNhMTU1ZjgiIG9wYWNpdHk9Ii44Ii8+CiAgPC9nPgoKICA8IS0tIHRvdGF1eCAtLT4KICA8ZyBmb250LWZhbWlseT0iJ0pldEJyYWlucyBNb25vJyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTEuNSIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzBmMDAzOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+CiAgICA8dGV4dCB4PSI2MSIgeT0iMjQ4Ij44IDQwMCDigqw8L3RleHQ+CiAgICA8dGV4dCB4PSIxNzEiIHk9IjI0OCI+MTEgMjAwIOKCrDwvdGV4dD4KICAgIDx0ZXh0IHg9IjI4MSIgeT0iMjQ4Ij42IDkwMCDigqw8L3RleHQ+CiAgPC9nPgoKICA8IS0tIGFsZXJ0ZSBwZXJpbWV0cmUgLS0+CiAgPGcgZmlsdGVyPSJ1cmwoI3NoKSI+CiAgICA8cmVjdCB4PSIxOTYiIHk9IjI3MiIgd2lkdGg9IjEzMiIgaGVpZ2h0PSIzNCIgcng9IjkiIGZpbGw9IiNGNDNGNUUiLz4KICAgIDxjaXJjbGUgY3g9IjIxNCIgY3k9IjI4OSIgcj0iOCIgZmlsbD0iI2ZmZmZmZiIvPgogICAgPHRleHQgeD0iMjE0IiB5PSIyOTMiIGZvbnQtZmFtaWx5PSJJbnRlcixzeXN0ZW0tdWksc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI0Y0M0Y1RSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+ITwvdGV4dD4KICAgIDx0ZXh0IHg9IjI3MiIgeT0iMjkzIiBmb250LWZhbWlseT0iSW50ZXIsc3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTAiIGZvbnQtd2VpZ2h0PSI3MDAiIGZpbGw9IiNmZmZmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPjIgcG9zdGVzIGFic2VudHM8L3RleHQ+CiAgPC9nPgoKICA8IS0tIGJhbmRlYXUgcGVyaW1ldHJlIGNvbW11biAtLT4KICA8ZyBmaWx0ZXI9InVybCgjc2gpIj4KICAgIDxyZWN0IHg9IjE0IiB5PSIzMjYiIHdpZHRoPSIzMTIiIGhlaWdodD0iMzgiIHJ4PSIxMSIgZmlsbD0iI2ZmZmZmZiIgb3BhY2l0eT0iLjk2Ii8+CiAgICA8Y2lyY2xlIGN4PSIzOCIgY3k9IjM0NSIgcj0iMTAiIGZpbGw9IiM3YjFhZDUiLz4KICAgIDxwYXRoIGQ9Ik0zMy41IDM0NSBsMy4yIDMuNCBsNiAtNi42IiBzdHJva2U9IiNmZmZmZmYiIHN0cm9rZS13aWR0aD0iMi4zIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICAgIDx0ZXh0IHg9IjE4NiIgeT0iMzQ5IiBmb250LWZhbWlseT0iSW50ZXIsc3lzdGVtLXVpLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTEuNSIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iIzBmMDAzOCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q29tcGFyw6lzIMOgIHDDqXJpbcOodHJlIMOpZ2FsPC90ZXh0PgogIDwvZz4KPC9zdmc+Cg==" alt=""></div>
+  </div>
+</div>
+
+<div class="content">
+
+<div class="toc"><div class="toc-t">Sommaire du guide</div><div class="toc-g"><a href="#ch0"><span class="tn">00</span><span class="tt">&Agrave; quoi sert cet agent</span></a><a href="#ch1"><span class="tn">01</span><span class="tt">Ce qu'il produit</span></a><a href="#ch2"><span class="tn">02</span><span class="tt">Les 4 briques d'un agent</span></a><a href="#ch3"><span class="tn">03</span><span class="tt">Le prompt d'initialisation</span></a><a href="#ch4"><span class="tn">04</span><span class="tt">Connecter vos outils</span></a><a href="#ch5"><span class="tn">05</span><span class="tt">Le lancer &agrave; la main</span></a><a href="#ch6"><span class="tn">06</span><span class="tt">Le mettre en automatique</span></a><a href="#ch7"><span class="tn">07</span><span class="tt">Ce qu'il ne fait pas</span></a><a href="#ch8"><span class="tn">08</span><span class="tt">Si &ccedil;a ne marche pas</span></a><a href="#ch9"><span class="tn">09</span><span class="tt">R&eacute;cap et exercices</span></a><a href="#ch10"><span class="tn">10</span><span class="tt">Quiz de fin</span></a></div></div>
+
+
+
+
+<!-- ===== CH 00 ===== -->
+<div class="ch" id="ch0">
+  <div class="ch-head"><span class="ch-num">00</span><h2>&Agrave; quoi sert cet agent</h2></div>
+  <div class="card">
+
+    <p>Vous avez besoin de faire refaire l'&eacute;lectricit&eacute; d'un local. Vous appelez trois entreprises, vous expliquez trois fois la m&ecirc;me chose, un peu diff&eacute;remment &agrave; chaque fois. Trois semaines plus tard, vous avez trois devis&nbsp;: 8&nbsp;400&nbsp;&euro;, 11&nbsp;200&nbsp;&euro; et 6&nbsp;900&nbsp;&euro;.</p>
+    <p>Vous prenez le moins cher. Et vous d&eacute;couvrez en cours de chantier que le tableau &eacute;lectrique n'&eacute;tait pas dedans, que la mise aux normes de la terre non plus, et que la facture finale d&eacute;passe le devis du milieu. Vous n'aviez pas compar&eacute; trois offres&nbsp;: vous aviez compar&eacute; trois p&eacute;rim&egrave;tres diff&eacute;rents.</p>
+    <p>Cet agent r&egrave;gle le probl&egrave;me &agrave; la source. Il &eacute;crit <strong>un cahier des charges unique</strong> &agrave; partir de votre besoin en langage courant, l'envoie &agrave; l'identique &agrave; tous les fournisseurs, suit les r&eacute;ponses, puis ram&egrave;ne les devis re&ccedil;us &agrave; un <strong>p&eacute;rim&egrave;tre commun, poste par poste</strong>. Vous comparez enfin la m&ecirc;me chose.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th></th><th>Sans l'agent</th><th>Avec l'agent</th></tr></thead>
+        <tbody>
+          <tr><td>&#128221; La demande</td><td>Expliqu&eacute;e au t&eacute;l&eacute;phone, diff&eacute;remment &agrave; chacun</td><td>Un cahier des charges &eacute;crit, le m&ecirc;me pour tous</td></tr>
+          <tr><td>&#9878;&#65039; Les crit&egrave;res</td><td>D&eacute;couverts au moment de choisir</td><td>Annonc&eacute;s aux fournisseurs d&egrave;s la consultation</td></tr>
+          <tr><td>&#128336; Les relances</td><td>Quand vous y pensez, souvent trop tard</td><td>Une date de r&eacute;ponse annonc&eacute;e, et la relance pr&eacute;par&eacute;e le jour o&ugrave; elle est due</td></tr>
+          <tr><td>&#128202; La comparaison</td><td>Trois totaux qui ne recouvrent pas la m&ecirc;me chose</td><td>Poste par poste, avec les &eacute;carts de p&eacute;rim&egrave;tre signal&eacute;s</td></tr>
+          <tr><td>&#128269; La d&eacute;cision</td><td>Le moins cher, faute de mieux</td><td>Une note de d&eacute;cision que vous pouvez relire dans six mois</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="analogy">
+      <div class="al">&#128203; L'analogie de l'appel d'offres</div>
+      <p>Les march&eacute;s publics imposent un dossier de consultation identique pour tous les candidats, des crit&egrave;res de choix annonc&eacute;s &agrave; l'avance, et une date limite unique. Ce n'est pas de la bureaucratie gratuite&nbsp;: c'est la seule fa&ccedil;on de rendre des offres comparables. Cet agent applique la m&ecirc;me logique &agrave; votre &eacute;chelle, sans la paperasse.</p>
+    </div>
+
+    <div class="tip info">
+      <span class="tip-i">&#128100;</span>
+      <div class="tip-c"><strong>Pour qui c'est fait</strong>Toute personne qui ach&egrave;te sans service achats&nbsp;: dirigeant de TPE, responsable de site, g&eacute;rant d'association. Celle qui doit expliquer, apr&egrave;s coup, pourquoi elle a choisi ce fournisseur-l&agrave;.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== CH 01 ===== -->
+<div class="ch" id="ch1">
+  <div class="ch-head"><span class="ch-num">01</span><h2>Ce qu'il produit</h2></div>
+  <div class="card">
+
+    <p>Quatre livrables, dans l'ordre o&ugrave; une consultation se d&eacute;roule. Aucun ne part sans vous.</p>
+
+    <h3>1. Le cahier des charges</h3>
+    <p>Une &agrave; deux pages, &eacute;crites &agrave; partir de ce que vous lui dites en langage courant. Il contient le besoin, le p&eacute;rim&egrave;tre, les contraintes, et surtout <strong>les crit&egrave;res de choix annonc&eacute;s</strong>. Si vous ne savez pas r&eacute;pondre sur un point, il laisse un blanc visible au lieu de le remplir &agrave; votre place.</p>
+
+    <div class="tip warn">
+      <span class="tip-i">&#128161;</span>
+      <div class="tip-c"><strong>Annoncer les crit&egrave;res change les devis re&ccedil;us</strong>Un fournisseur qui sait que le d&eacute;lai compte autant que le prix ne chiffre pas la m&ecirc;me offre. Dire &agrave; l'avance &laquo;&nbsp;prix 50&nbsp;%, d&eacute;lai 30&nbsp;%, proximit&eacute; 20&nbsp;%&nbsp;&raquo; n'est pas une faiblesse&nbsp;: c'est ce qui vous fait recevoir des offres qui vous correspondent.</div>
+    </div>
+
+    <h3>2. Un mail de consultation par fournisseur</h3>
+    <p>En brouillon, jamais envoy&eacute;. M&ecirc;me corps pour tous &mdash; c'est le but &mdash; avec la date de r&eacute;ponse attendue &eacute;crite noir sur blanc, et le cahier des charges en pi&egrave;ce jointe.</p>
+
+    <h3>3. Le suivi et les relances</h3>
+    <p>Qui a r&eacute;pondu, qui n'a pas r&eacute;pondu, depuis combien de jours. Pour ceux qui d&eacute;passent la date annonc&eacute;e, une relance pr&ecirc;te &agrave; relire.</p>
+
+    <h3>4. Le comparatif et la note de d&eacute;cision</h3>
+    <p>C'est le livrable qui fait la diff&eacute;rence. Les devis re&ccedil;us sont ramen&eacute;s &agrave; un m&ecirc;me d&eacute;coupage, poste par poste. Quand un poste est absent d'un devis, <strong>il est marqu&eacute; absent&nbsp;: il n'est jamais estim&eacute;</strong>. La note r&eacute;sume l'&eacute;cart r&eacute;el, les points &agrave; clarifier avant de signer, et ce que chaque offre engage.</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>Poste</th><th>Fournisseur A</th><th>Fournisseur B</th><th>Fournisseur C</th></tr></thead>
+        <tbody>
+          <tr><td>D&eacute;pose de l'existant</td><td>900&nbsp;&euro;</td><td>Inclus dans la pose</td><td>1&nbsp;150&nbsp;&euro;</td></tr>
+          <tr><td>Tableau &eacute;lectrique</td><td>2&nbsp;400&nbsp;&euro;</td><td>2&nbsp;750&nbsp;&euro;</td><td><strong>Absent du devis</strong></td></tr>
+          <tr><td>Mise &agrave; la terre</td><td>Inclus</td><td>620&nbsp;&euro;</td><td><strong>Absent du devis</strong></td></tr>
+          <tr><td>Total annonc&eacute;</td><td>8&nbsp;400&nbsp;&euro;</td><td>11&nbsp;200&nbsp;&euro;</td><td>6&nbsp;900&nbsp;&euro;</td></tr>
+          <tr><td><strong>P&eacute;rim&egrave;tre comparable&nbsp;?</strong></td><td>Oui</td><td>Oui</td><td><strong>Non &mdash; 2 postes &agrave; chiffrer</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip err">
+      <span class="tip-i">&#9878;&#65039;</span>
+      <div class="tip-c"><strong>Un poste absent n'est pas un poste gratuit</strong>C'est la r&egrave;gle la plus importante de cet agent. Il ne comblera jamais un trou avec une estimation, m&ecirc;me &laquo;&nbsp;raisonnable&nbsp;&raquo;&nbsp;: il vous dit qu'il manque, et vous renvoyez la question au fournisseur. Un chiffre invent&eacute; dans un comparatif se transforme en mauvaise surprise sur la facture.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== CH 02 ===== -->
+<div class="ch" id="ch2">
+  <div class="ch-head"><span class="ch-num">02</span><h2>Les 4 briques d'un agent</h2></div>
+  <div class="card">
+
+    <p>Un agent n'est pas une bo&icirc;te noire. Il est fait de quatre pi&egrave;ces, et chacune a un r&ocirc;le pr&eacute;cis. Comprendre ces quatre pi&egrave;ces, c'est comprendre les trois agents du kit Achats, pas seulement celui-ci.</p>
+
+    <div class="vg">
+      <div class="vc">
+        <div class="vt">&#128220; Le skill</div>
+        <div class="vd">La proc&eacute;dure. Ce que l'agent doit faire, dans quel ordre, et ce qu'il doit produire &agrave; la fin.</div>
+        <div class="ve">Ici&nbsp;: cadrer le besoin, consulter, suivre, comparer</div>
+      </div>
+      <div class="vc">
+        <div class="vt">&#128214; Le contexte</div>
+        <div class="vd">Le fichier contexte-agent.md. Votre activit&eacute;, vos familles d'achat, qui d&eacute;cide, et &agrave; partir de quel montant vous consultez plusieurs fournisseurs.</div>
+        <div class="ve">Ex&nbsp;: &laquo;&nbsp;3 consultations par mois, je d&eacute;cide seul en dessous de 5&nbsp;000&nbsp;&euro;&nbsp;&raquo;</div>
+      </div>
+      <div class="vc">
+        <div class="vt">&#128268; Le connecteur</div>
+        <div class="vd">Le branchement vers vos outils, pour que l'agent retrouve les devis re&ccedil;us sans que vous les lui recopiiez.</div>
+        <div class="ve">Ex&nbsp;: votre messagerie, votre stockage de fichiers</div>
+      </div>
+      <div class="vc">
+        <div class="vt">&#9203; La t&acirc;che programm&eacute;e</div>
+        <div class="vd">Le d&eacute;clencheur. L'heure et le jour o&ugrave; l'agent part tout seul, sans que vous ouvriez quoi que ce soit.</div>
+        <div class="ve">Ex&nbsp;: chaque matin &agrave; 8h30, les devis arriv&eacute;s depuis hier</div>
+      </div>
+    </div>
+
+    <div class="flow">
+      <div class="flow-node trigger"><div class="fl">&#9203;</div><div class="fn2">Lundi 9h</div><div class="fd">D&eacute;clencheur</div></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node"><div class="fl">&#128214;</div><div class="fn2">Contexte</div><div class="fd">Vos r&egrave;gles d'achat</div></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node ai"><div class="fl">&#128269;</div><div class="fn2">Skill</div><div class="fd">Qui n'a pas r&eacute;pondu</div></div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node action"><div class="fl">&#9993;&#65039;</div><div class="fn2">Les relances</div><div class="fd">En brouillon</div></div>
+    </div>
+
+    <div class="analogy">
+      <div class="al">&#127869;&#65039; L'analogie de la recette</div>
+      <p>Le <strong>skill</strong>, c'est la recette &eacute;crite. Le <strong>contexte</strong>, ce sont vos go&ucirc;ts et vos contraintes, qui font que le plat vous convient &agrave; vous. Les <strong>connecteurs</strong>, ce sont les portes du placard et du frigo. La <strong>t&acirc;che programm&eacute;e</strong>, c'est le minuteur qui dit &agrave; quelle heure on passe en cuisine.</p>
+    </div>
+
+    <div class="tip warn">
+      <span class="tip-i">&#9889;</span>
+      <div class="tip-c"><strong>La brique qu'on oublie, c'est le contexte</strong>Un agent sans contexte fonctionne quand m&ecirc;me, mais il vous &eacute;crit un cahier des charges g&eacute;n&eacute;rique, sans vos seuils ni votre d&eacute;cideur. C'est le chapitre suivant, et c'est le plus important du guide.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== CH 03 ===== -->
+<div class="ch" id="ch3">
+  <div class="ch-head"><span class="ch-num">03</span><h2>Le prompt d'initialisation</h2></div>
+  <div class="card">
+    <div class="kitbox">
+      <div class="kl">&#128230; Un kit agent, c'est deux &eacute;l&eacute;ments</div>
+      <ol>
+        <li><strong>Le fichier d'instructions</strong> &mdash; il contient tout&nbsp;: les connecteurs &agrave; brancher, les comp&eacute;tences &agrave; cr&eacute;er, les t&acirc;ches programm&eacute;es. Vous le t&eacute;l&eacute;chargez et vous le d&eacute;posez dans la conversation.</li>
+        <li><strong>Le prompt d'initialisation</strong> &mdash; une seule phrase, qui dit &agrave; Claude de lire ce fichier et d'installer l'agent.</li>
+      </ol>
+    </div>
+
+    <h3>1. T&eacute;l&eacute;chargez le fichier d'instructions</h3>
+    <p><a class="filelink" href="https://drive.google.com/file/d/1bmLVMdLxD75_RimkMyHpJYpjw4Vkjqqu/view" target="_blank" rel="noopener">&#128196; Agent-consultation-fournisseurs.md</a></p>
+    <p>Ouvrez une conversation Claude, d&eacute;posez le fichier dedans, puis collez le prompt ci-dessous.</p>
+
+    <h3>2. Collez le prompt d'initialisation</h3>
+    <div class="codewrap"><button class="copybtn" type="button">Copier</button><div class="code">
+Lis le fichier Agent-consultation-fournisseurs.md que je viens de te d&eacute;poser, et installe l'agent. Dans l'ordre&nbsp;: connecte les MCP qu'il liste, cr&eacute;e les skills qu'il d&eacute;crit en commen&ccedil;ant par le d&eacute;marrage, puis cr&eacute;e les t&acirc;ches programm&eacute;es. Pour chaque &eacute;l&eacute;ment, annonce ce que tu vas faire et attends mon accord avant de cr&eacute;er. S'il manque une information que le fichier ne contient pas, pose-moi la question, une &agrave; la fois, et n'invente aucune valeur. Quand tout est en place, fais-moi un r&eacute;capitulatif de ce qui est connect&eacute;, de ce qui a &eacute;t&eacute; cr&eacute;&eacute;, et de ce qui reste &agrave; faire de mon c&ocirc;t&eacute;.
+    </div></div>
+
+    <div class="tip info">
+      <span class="tip-i">&#128161;</span>
+      <div class="tip-c"><strong>Pourquoi ce prompt est &eacute;crit comme &ccedil;a</strong>Il impose trois choses&nbsp;: un ordre (connecteurs, puis comp&eacute;tences, puis t&acirc;ches), votre accord avant chaque cr&eacute;ation, et l'interdiction d'inventer une valeur manquante. Sans ces trois phrases, Claude installe vite, et vous d&eacute;couvrez les erreurs plus tard.</div>
+    </div>
+
+    <h3>3. Configurez-le&nbsp;: &laquo;&nbsp;d&eacute;marre mon agent achats&nbsp;&raquo;</h3>
+    <p>L'installation met l'agent en place. La configuration lui dit chez qui il travaille. Elle se fait <strong>une seule fois pour les trois agents du kit Achats</strong>&nbsp;: Consultation fournisseurs, Contrats et abonnements, Contr&ocirc;le fournisseur lisent le m&ecirc;me fichier.</p>
+
+    <div class="prereq">
+      <div class="pl">&#128221; Pr&eacute;parez vos r&eacute;ponses avant de lancer</div>
+      <ul>
+        <li>Votre activit&eacute; et ce que vous achetez le plus souvent</li>
+        <li>Le montant &agrave; partir duquel vous consultez plusieurs fournisseurs</li>
+        <li>Qui d&eacute;cide au final, nom et fonction</li>
+        <li>Votre d&eacute;lai habituel pour laisser r&eacute;pondre un fournisseur</li>
+        <li>Vos outils&nbsp;: messagerie, stockage, tableur, agenda</li>
+        <li>Ce qui vous prend le plus de temps aujourd'hui dans vos achats</li>
+      </ul>
+    </div>
+
+    <div class="codewrap"><button class="copybtn" type="button">Copier</button><div class="code">
+<span class="kw">d&eacute;marre mon agent achats</span>
+    </div></div>
+    <p>Six questions courtes suivent, une par une. Claude &eacute;crit ensuite <strong>contexte-agent.md</strong>, que les trois comp&eacute;tences relisent &agrave; chaque fois.</p>
+
+    <div class="warning-big">
+      <div class="wl">&#128274; Ne donnez jamais de mot de passe ni de cl&eacute; d'API</div>
+      <p>Le kit ne vous en demandera jamais, et vous ne devez jamais en &eacute;crire dans votre fichier de contexte. Les connexions &agrave; vos outils se font uniquement par les &eacute;crans pr&eacute;vus pour &ccedil;a dans votre application Claude.</p>
+    </div>
+
+    <div class="tip err">
+      <span class="tip-i">&#128683;</span>
+      <div class="tip-c"><strong>Sans contexte, cet agent s'arr&ecirc;te</strong>Il ne devine ni votre seuil de consultation ni votre d&eacute;cideur. Si le fichier manque, il vous propose le d&eacute;marrage et n'improvise rien.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== CH 04 ===== -->
+<div class="ch" id="ch4">
+  <div class="ch-head"><span class="ch-num">04</span><h2>Connecter vos outils</h2></div>
+  <div class="card">
+
+    <div class="tools"><div class="tool"><span class="tico" style="background:#ffffff;border:1px solid var(--border)"><img class="toolico" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAEkklEQVR4Ae2ZA5BkSRRFc23bv7H2Fta72V7btm3bDq3tsdkY27b9a9xmTr6IyXB0Z1W/6j8/+56IGzOB1jsdpzp+CQMAAAAAAAAAAAAAAACAEZ53xvDMoz8ekXXMqBGZxyyiDc88pnhExjHvj/S8E0Q7pW7gTtH64h0/ry/ZcVhDyQ6LaPT/+tIdX68ZtEu2aC2js484Uh+7l55qZvUjM4/+btBxhx8o2gnVg3b16kp2+k8fWzU3LeQ3NUjsK1JB/8ZfoI+7QU9ZLjHS84qE4+ij3qyPW66nLLesdsDOyVViZNaR2Toxq+iwyY6yNEiKHYVjqEFi14biHb6joyY7naRZapCwL8TW1qtUR68PYz3vUOEI1HN9yEl6KtVRsoQNw7I9aQ7ZSgmr9GtDnvPJsV+91QuzPl4nPcW1NXmRd5WUoUvSIil3XXvVGX/T8bhGfzHZCJjGKcDPi6lEXqzYl7HQJMmXZ2Xr73uSHh2Oc71sBFQzCzBbtbogts0nSX+fN/t58XL6nrkF0IuxjQCVJgG0+kRu9G2eJPEnJ5Ef/c58r9wCzIIWwJwk/uS4LoA1SfzJcV8Aa5L4k+O+AIYk8SYHAhiSxJAcCEh3knx58p768/9kvhYEtGGSVhdGT/FzY9Poc2/zAp58oMvYYVlZAQngT5LOzd0mOUEKqCzeRd3fRY4ULZH7YYW6+cVJS/qeenYAAtiSZJLzm/lcQQpYNGAfVdjh8uXR/69XVgJol7zrV/1+0W0sAhg2aJ08+8j0J4dfQL8+x6hzO1xbQ8dPSoDZezd+oShJAQugJdbkx4v4k8MvwCTnw+4RZQ6fsgDag48Xq/6nRBgEMCw39jEliS85/AIoObd2yqeD8wigXf36YvXnBTdzCGBYfBgliSE57AIoORd1uJqOzSuAlv/BRvXB9Z9RkngEMCSp2eQwrBXJ4Rdgdt+TgxT9lWQpINRrZXL4BZhd8dYyRX8luS/APjn8Aiz2zk3fUJJcFWCbnOAE0O55aiglyUUBFskJXIBJ0opGSpJjAmyTE7wAs7dv/qaRkuSUAPvkBC+AdssLkxOUJFcEUHKu71RYRQcMhQBawQcbN/4s75kfdgFde2cuOuf/66rpeKESYEZPM+mpZgiPX53Iiz5sDhdaAUJDz/Xp+X5ojp8fn+cXxM4QGicEEPQOF73TFQIB/9GDPUG4JICgp5j8SeJNjjC4KIDgTxJvctwXwJ8k1uS4L4A/SazJcV8AZ5IYkgMBDEliSA4EpD9J8XK9+4UBAtouSfR+Mb1vLAgIaPMk/WafHAjgSpJJzt3CAAGpk8iPSn3UZezJgQB7VsrIgfq4/ZJNDgQw4+fGX6YkWScHAvjx8yMXUJIYkgMBDEliTQ4E8AMBEAABEAABEAABEAABEAABEAABQQEBEDDLQkDlPAhIk4D/rv+rZQEflL8PAekREPv/httFS8h3NuyrD7eMUwAE0PGv7yVskR9tPiHvw4pJbAIgYFqs442HimSQ76gd9evB6zkfVg7T/5ZDQGqHj3S47nn52z27CgAAAAAAAAAAAAAAAAAAtFu2AJlqODQM4+yVAAAAAElFTkSuQmCC" width="22" height="22" alt=""></span><div><div class="tname">Gmail<span class="mcp ">MCP natif</span></div><div class="tdesc">Les r&eacute;ponses des fournisseurs, et les brouillons de consultation et de relance. Il ne les envoie jamais&nbsp;: vous relisez et vous cliquez.</div></div></div><div class="tool"><span class="tico" style="background:#ffffff;border:1px solid var(--border)"><img class="toolico" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAIP0lEQVR42u2cbUxTVxjHm1gc28jCBzdbZUoUHVGGQMuLEbW8CG7IJPcWnTEOohswdE5HnFPMoAIydRE3XYghTh1IW1jGMre5UZQPLPrBGJQOX8CNTeOKoDIGWdUiZ+dELjLE9vbec8+9LfdJ/uEjJ7//vec853meW4VCDjnkkEMOOeSQQw455JBDrCjUKScboperCmOMUJehbFAAk25AWaGOqAxRKTLsURFlpLUz9sefxgjcqcqOBNTd/3lisEwehtakz9aaaEdENXVbbZgvOPzQXRrwr8Wn39Gg7BuwTFg+ruFHmOlkCB8wmnVgieAGVB2fPADhgyHZH9T7hI1L+JE16SqtieoeaYDGRA1OLV4gGPykT0PBvQafwREGAPgWtINGhd/423qMdOVI+IzmHHpNMAPOfOMPRsIf1ill0fjaekxUzFjwGU3bvQg7/KyDs8eGP7QV2Rt9A8fP9mOizzozIPRoKlb403dGges/POfMAPCgwcc4TuDrVzuDz2hGWTw2A3Z/Oc0p/GFZlDqvhj+3Jt0PwrWxMSC8Kg2oi/inpeGlEaC/fiI7AxqUzfBAVnrv02/UF7GBz+iVL5J4G/C18SW28JmtaJ1Xwo8xpgVCqHZ3DNAYKRCwK5Yz/NR9IW7BH1I3fAv8vS/tNOtr3YHPKKQihbMB5799gYsB6CzY62U5v17HBT6jwD2L3Ya/qTyIG/xHctxrfCbIK+DrGnVKCNHKx4B5x5YDtYE9/NnFWnDzx2f5GIB00puKbYCvZu5PYG3A/qMBfOEzW1GyR8MPq0vzH13v4SrNcYpVWhqzOxzYLT54DDilvOzRaSl8+stwwGcUXL7UpQEnaybhgf9YeR4JX1NNB6M6P04DNEbaaVqqL5uDGz5SD3wLJnli2nkSJ/zhtPTwsjHhBxiiwZUTfkIYgErW5R7daMGtwL26JwzYemimIPCZtNRjGjdDaWe7kAaEffX/tBSlnXd+8hXSAKRGz9j7zVSekPCH25efP25fHq1UPRQYPrMV0RI/eFdNgnB6SBigrabtqH25eM88cN+iJGNAw4QOeCD7SrjWT1UQgT+kVw+nWK99//xVEvBH3A3ypdpkD8OddrJQHYRyjqgBDco++BaoJFhwo5oIw7dH1KQHOSzKWMIGoJ5BpcQaLdRKwvBBpIkuZf4/6ucSN8HiEyONtPNIpq/GRHcQNsCG2pvMGuCWEIAmGwibcFYi9R46n/TTrzHTGaPXAQ/HAtJvAcyKMkSFH11FBbjbZsSgc2OtBaWHEMoNwibYRJ2qe9p0m5BCQ11PWw98IleSfgtEm6pzNd0miKDhrtYFoTQRNsEuSvsSbQWk00605bla14N6Hy3xt6BBWUu43kNnEH/64WHPdn1wK6ogbgKpqTp3ptuwZT0wzUXpLts1opsqaqQQPgusRNqX6AJE/NIFL3rurhMC2SrCDTlb2IMXXv1FSDs51eHR04g+viBsgrBTdVyn23jIgYp8XNcLDUgR4SwoE6jeo08gX++hKviuG0KxEDbBgf0LTBzTbRzUgxo8fNeOYCAohE3AO1WHa7rNvXoPhW0eB25FB0TYivBM1T2abiPUZnysdvTW4TIAHYyk09Khry+VGJ5++gDxeo+Zxj6TiVJEEW7I/N5iIabbXMqsF2QqGT2N6LJE2IAeXu1LCMRCOu1EpguVRjvqlQki9Ay4ZXIaI5VCvt6jL1MIHBBKHem01O2pOhLTbU+K6kYHvtAGoNKxCO3LJnfrPe+L8PRnKwgFPAtKiW9FbH+ZBVUdSVc7oZpxpp0sDmQ/1E4kbEKzdPd+o16nIByooU68WsrmLNCY6b2E085ahUhBeqoO3kXWs8j9V1STbDOiD7jFMgANV0muga/KshrV2S2AhMK3/dUcX9IPxFTVWyVXuhIiAQl1J0a6/gAcgikjAf/l3FYQV9JvF9uAZYZbvTeXLCBjQEKk69KEOqdlNQkDNNs7gdjwGR18p5yIAV2JmliXBryY2+oHAfUICX/Ge22SgY+UVHx3sHVZqsDwo9pZH07wHCgQ0oD5BbclZQDSjo3fCfwGRLH/GZzAzGZ/CMomBPzgzb9LDj6jJmqtMPDjI61A5+ZFU5V1MQM3/Kk5VrBoZ69kDVi77QKwJcZgN6BzSWQCpzwZQjuH04DQD29IFj4j85oC3FsP94vmlKwLsbjgT1t/CcQV90neAOrj66AjOQ6XAfYuXQS/wV0IrxKHAdr8W5KHz2hf1mFcez//0fWpb18MgADtfOAHbWzzGPhIS4p7QUtqGl8DbF26uXg+3uCTlk7JtoIFhXc9ygCkzR+c5rv34/t8KTCzwxfC7OBiwJy8PzwOPiNLei5XA/B/wAef5JVup53v/goWF/V6rAFr8i9xSks7E6OF+YRVnW1tcseAsI9ueix8RscyP3G34CbcR9zQAC0E62ADf/qGyyCupM/jDUg1dILfliay3ff77uiiAwRtYqhzrBVsDIja0eXx8Bntyq1mmXZGCf9DHi/mtqpcVUtnbbrmNfCZtPT8GytcGdDRodOR+SkbmJbmOUs7Fxr+9ioDkDZs+cWpAbcStQR/zKmwUanKamkfy4CQLX96HXxGJ97Me5oB5H/OTJ1zIXmsNqOu6B+vNWBVftvgGO1LR2eSNkSUqQJ1TkvpSAMittseeit8RofWfTYq7dRmK0QLuBVB8LUIfuCGqwNwgQPebkBSce+9tteTh9qMkWUKKQQ6lBfu7G31dviMcrecOQMvXKsVUgrdnn5VfHFfUUJJP5r1cXgheHtCSd9Z+HerrrDHXyGHHHLIIYcccsghhxxyyCGHHHJwiP8Ak6aYAJRp4psAAAAASUVORK5CYII=" width="22" height="22" alt=""></span><div><div class="tname">Google Drive<span class="mcp ">MCP natif</span></div><div class="tdesc">Les devis re&ccedil;us et le comparatif produit, rang&eacute;s dans le dossier de la consultation.</div></div></div><div class="tool"><span class="tico" style="background:#ffffff;border:1px solid var(--border)"><img class="toolico" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAMAAADVRocKAAAAWlBMVEUAAABAv0A0p1I0qFMzqFM0qFMXgTc1qlU0qFMYgDg0qFM0p1M0qFP///+Z06k0qFM0qFM0p1M1p1Q1qFQwr1A0qVM1qFMzplM0qFM0qFM0p1I0qFMzqVJAn2C6RdwUAAAAHnRSTlMABGO73/9vGM//v2vv///X26ODWxDjsyjTe8PzcwhvOvRjAAAAv0lEQVR4Ae3TQQIBQQxE0YYUBQAA978my9lNpAWof4G3+uUTU51ur2+OUGINhuaLQWFkzhgTxuaNMaHnB2LCxA/EBHsMILIBIhsgsgEiGyCyASIbILIBIhsgsgEiGyCyASIbILIBIhsg0gC/YJUJECBAwLOBqTMB3w5Yo9n03swaCRBQD2g0AfrgUwEBOllAOAECBAgQIECAv3krsLCqlq3AyqpatwKbrVW0K+3thxbuMCiOOsfT2SIdLtfygakbsF6H8/pufmQAAAAASUVORK5CYII=" width="22" height="22" alt=""></span><div><div class="tname">Google Sheets<span class="mcp ">MCP natif</span></div><div class="tdesc">Le tableau comparatif poste par poste et le suivi des relances. C'est lui qui ex&eacute;cute les calculs, pas l'agent de t&ecirc;te.</div></div></div><div class="tool"><span class="tico" style="background:#ffffff;border:1px solid var(--border)"><img class="toolico" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAMAAADVRocKAAABGlBMVEUAAABAgP9DhvVBhvRChfRChfQZZ9IZZ9EZaNMYZtNAivRDhfQaZ9IVatVBhvQZaNJDhfMZaNEaZ9FChfQZZ9L////7vATx9v6myfaCs/Jin+9XmO57rvK41Pj7/f/i7fzG3PmYwPUofOkac+gwgOq00fifxPUhd+l0qvGRu/Tt9P2UvvQleulFjew3heu81vjD2vkzguvp8v34+/7f6/xMku1QlO2GtfMedegsfupTlu5JkO2tzfd/sPKJt/O/2PmNufTX5/s6h+uqy/abwvXJ3vpwqPH0+P4+ieyxz/dtpvBbm+5ene/U5ftlofDN4PoYgDg0qFPqQzXqRDUYgDgXgDgggEAYgDgagDkXgDcAgEAZgTgYgDgYgDg1l7sXAAAAXnRSTlMABGO73///z5tLGM+fDL+7a1Oz79///////////////////////////////////////////////////////////////////////////////////4/bgxDjKM8Ee8PzvzhR0gAAAcJJREFUeAHt1oWu20AQheEppMzthPmEmXOZqQxbhvd/ja59mS1rRhDtbxTtJ1qgWcvlct24eet2JER3TnT33n26rAcPI0eFBmyPHtPFPYlIALandGHPIjKA7Tld1C054AVd1Es54BVdVEQKsMkBDnCAAxzAAYueywEOmEEgFk8kU+lMlk+Wy+djMkC2UIRfqczHVapAXgao4ag6H9RIAlJAE7ZWuwOvLvv1+hADBlUAiSHzaAxgwrbsdA6CwHQeC+wVmwdgpcYibHNCgG24lGO/JADvdwHA8ooccNQEQMx+c635VV6TB9arwAZ7dQesAGQ6AJb4IGFgdaHdgm2ZlYBN+G2xMtAvawHbOzuTImxbSoDXsDkHzI3UAFsBwI4msDsH7MkDw9dNPqgEzIkDayVUY+w3ALAhDrwB8DbLXu8AJMWB93MAxquNRncMW08c4BWc6APLA5zGUaldDYC7e/DrV9TWoo+F5cRWzx0dHTD7wKdzfQ7Yl7MZZcCQLmBIFzCkCxjSBQzpAoZ0AUO6gCFdwJAuYEgXMKQLGLqur+GBQOPTt/BAoPHp+4/wgKEg/fwVFjAUrN9//v4LAxhyuVyz3X/dV4hAn5ff5AAAAABJRU5ErkJggg==" width="22" height="22" alt=""></span><div><div class="tname">Google Agenda<span class="mcp ">MCP natif</span></div><div class="tdesc">Les dates de relance et la date de d&eacute;cision, pos&eacute;es au moment o&ugrave; la consultation part.</div></div></div></div>
+
+    <div class="tip info">
+      <span class="tip-i">&#128279;</span>
+      <div class="tip-c"><strong>Deux sortes de connecteurs, &agrave; ne pas confondre</strong><strong style="display:inline;color:inherit">MCP natif</strong>&nbsp;: d&eacute;j&agrave; dans Claude, vous l'activez en un clic (Gmail, Google Drive, Google Sheets, Google Agenda). <strong style="display:inline;color:inherit">MCP officiel</strong>&nbsp;: publi&eacute; par l'&eacute;diteur de l'outil, vous l'ajoutez vous-m&ecirc;me dans Param&egrave;tres &rsaquo; Connecteurs avec l'URL qu'il fournit. Dans les deux cas, c'est votre compte&nbsp;: l'agent ne voit que ce que votre r&ocirc;le vous autorise &agrave; voir.</div>
+    </div>
+
+    <p>Cet agent a besoin de deux choses&nbsp;: pouvoir &eacute;crire des brouillons, et retrouver les devis quand ils arrivent. Tout le reste en d&eacute;coule. Il fonctionne sans connecteur, mais vous devrez alors lui d&eacute;poser les devis vous-m&ecirc;me.</p>
+
+    <h3>Les quatre cat&eacute;gories du kit Achats</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Cat&eacute;gorie</th><th>&Agrave; quoi &ccedil;a sert ici</th><th>Options courantes</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Messagerie</strong></td><td>Lire les r&eacute;ponses fournisseurs, pr&eacute;parer les consultations et les relances en brouillon</td><td>Gmail, Outlook (connecteur Microsoft 365), Infomaniak Mail, Proton Mail, OVHcloud</td></tr>
+          <tr><td><strong>Stockage de fichiers</strong></td><td>Ranger les devis re&ccedil;us et le comparatif produit</td><td>Google Drive, SharePoint, OneDrive, Nextcloud, kDrive, Dropbox</td></tr>
+          <tr><td><strong>Tableur</strong></td><td>Le comparatif poste par poste et le suivi des relances</td><td>Google Sheets, Excel, un fichier CSV local</td></tr>
+          <tr><td><strong>Agenda</strong></td><td>Les dates de relance et la date de d&eacute;cision</td><td>Google Agenda, Outlook Calendar, Infomaniak Calendar, Proton Calendar</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip warn">
+      <span class="tip-i">&#9888;&#65039;</span>
+      <div class="tip-c"><strong>Si vous travaillez sous Microsoft&nbsp;365</strong>Outlook, OneDrive et SharePoint passent par le connecteur Microsoft&nbsp;365 officiel d'Anthropic. Il est <strong>en lecture par d&eacute;faut</strong>&nbsp;: l'&eacute;criture, donc la cr&eacute;ation de brouillons, doit &ecirc;tre valid&eacute;e par un administrateur Microsoft Entra de votre organisation. Si vos brouillons ne se cr&eacute;ent pas, c'est l&agrave; qu'il faut regarder, pas dans le kit.</div>
+    </div>
+
+    <h3>Pourquoi le kit ne nomme jamais un produit</h3>
+    <p>Dans les fichiers du kit, vous croiserez <strong>~~messagerie</strong> ou <strong>~~stockage</strong>. Ce sont des emplacements vides, volontairement. Votre fichier de contexte fait la correspondance avec vos outils r&eacute;els. Pour changer, dites &laquo;&nbsp;mets &agrave; jour mes outils dans le contexte de l'agent achats&nbsp;&raquo;.</p>
+
+    <div class="vg">
+      <div class="vc"><div class="vt">&#128260; Vous changez d'outil</div><div class="vd">Une ligne modifi&eacute;e dans le contexte, et le kit suit. Rien &agrave; r&eacute;&eacute;crire.</div></div>
+      <div class="vc"><div class="vt">&#128683; Vous n'avez rien de branch&eacute;</div><div class="vd">Vous collez les devis dans la conversation. Le comparatif est identique&nbsp;: seule la collecte change.</div></div>
+      <div class="vc"><div class="vt">&#127760; Votre outil n'est pas list&eacute;</div><div class="vd">Indiquez son nom au d&eacute;marrage, le kit l'utilisera tel quel.</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== CH 05 ===== -->
+<div class="ch" id="ch5">
+  <div class="ch-head"><span class="ch-num">05</span><h2>Le lancer &agrave; la main</h2></div>
+  <div class="card">
+
+    <h3>La phrase la plus courte</h3>
+    <div class="codewrap"><button class="copybtn" type="button">Copier</button><div class="code">
+<span class="kw">j'ai besoin de consulter pour refaire l'&eacute;lectricit&eacute; du local</span>
+    </div></div>
+
+    <h3>Les variantes qui le d&eacute;clenchent aussi</h3>
+    <div class="vg">
+      <div class="vc"><div class="vt">&laquo;&nbsp;compare les devis&nbsp;&raquo;</div><div class="vd">Quand les devis sont d&eacute;j&agrave; arriv&eacute;s et que seule la comparaison vous int&eacute;resse.</div></div>
+      <div class="vc"><div class="vt">&laquo;&nbsp;fais-moi un cahier des charges pour&hellip;&nbsp;&raquo;</div><div class="vd">Quand vous voulez cadrer le besoin avant de parler &agrave; qui que ce soit.</div></div>
+      <div class="vc"><div class="vt">&laquo;&nbsp;o&ugrave; en sont mes consultations&nbsp;&raquo;</div><div class="vd">L'&eacute;tat des lieux&nbsp;: qui a r&eacute;pondu, qui est en retard.</div></div>
+    </div>
+
+    <h3>Le d&eacute;roul&eacute; en huit &eacute;tapes, vu de votre c&ocirc;t&eacute;</h3>
+    <ol class="steps">
+      <li><strong>Vous d&eacute;crivez le besoin</strong> en langage courant. Pas de vocabulaire technique exig&eacute;.</li>
+      <li><strong>Il vous pose les questions manquantes</strong>, une par une&nbsp;: budget indicatif, d&eacute;lai souhait&eacute;, contraintes de site, qui d&eacute;cide.</li>
+      <li><strong>Il &eacute;crit le cahier des charges</strong> et vous le fait relire. Les points que vous n'avez pas tranch&eacute;s restent des blancs visibles.</li>
+      <li><strong>Vous validez les crit&egrave;res de choix</strong> et leur poids. C'est le moment o&ugrave; vous d&eacute;cidez ce qui compte vraiment.</li>
+      <li><strong>Il pr&eacute;pare un mail par fournisseur</strong>, en brouillon, avec la date de r&eacute;ponse attendue.</li>
+      <li><strong>Vous relisez et vous envoyez</strong> &#9989; C'est votre geste, pas le sien.</li>
+      <li><strong>Il suit les retours</strong> et pr&eacute;pare les relances pour ceux qui d&eacute;passent la date.</li>
+      <li><strong>&Agrave; r&eacute;ception, il produit le comparatif</strong> et la note de d&eacute;cision.</li>
+    </ol>
+
+    <h3>Les quatre questions qui font un bon cahier des charges</h3>
+    <p>C'est l&agrave; que se joue la qualit&eacute; de toute la consultation. Un cahier des charges flou produit des devis flous, et aucun comparatif ne rattrape &ccedil;a ensuite.</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>La question</th><th>Ce qu'elle &eacute;vite</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Qu'est-ce qui existe d&eacute;j&agrave;&nbsp;?</strong><br>&Eacute;tat des lieux, mat&eacute;riel en place, contraintes du b&acirc;timent</td><td>Le poste &laquo;&nbsp;d&eacute;pose de l'existant&nbsp;&raquo; qui appara&icirc;t chez l'un et pas chez l'autre.</td></tr>
+          <tr><td><strong>O&ugrave; s'arr&ecirc;te la prestation&nbsp;?</strong><br>Fourniture seule, pose, mise en service, formation, garantie</td><td>Le fournisseur le moins cher qui livre sans installer.</td></tr>
+          <tr><td><strong>Pour quand&nbsp;?</strong><br>Date butoir r&eacute;elle, et ce qui se passe si elle est rat&eacute;e</td><td>Un devis attractif avec un d&eacute;lai de quatre mois que personne n'avait lu.</td></tr>
+          <tr><td><strong>Qu'est-ce qui vous ferait dire non&nbsp;?</strong><br>Les crit&egrave;res &eacute;liminatoires</td><td>De perdre trois semaines &agrave; &eacute;valuer une offre qui ne pouvait pas passer.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Trois fournisseurs, pas deux, pas huit</h3>
+    <p>&Agrave; deux, vous n'avez pas de comparaison&nbsp;: vous avez un prix et une alternative. Au-del&agrave; de quatre ou cinq, le temps de d&eacute;pouillement d&eacute;passe l'&eacute;conomie esp&eacute;r&eacute;e, et les fournisseurs le sentent&nbsp;: une consultation trop large fait baisser la qualit&eacute; des r&eacute;ponses, parce que chacun estime ses chances trop faibles pour y passer du temps.</p>
+
+    <div class="tip ok">
+      <span class="tip-i">&#9989;</span>
+      <div class="tip-c"><strong>Dites-leur combien ils sont</strong>&laquo;&nbsp;Nous consultons trois entreprises&nbsp;&raquo; dans le mail de consultation. C'est honn&ecirc;te, et &ccedil;a situe l'effort attendu&nbsp;: un fournisseur qui se sait en concurrence restreinte sait que sa r&eacute;ponse sera lue.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== CH 06 ===== -->
+<div class="ch" id="ch6">
+  <div class="ch-head"><span class="ch-num">06</span><h2>Le mettre en automatique</h2></div>
+  <div class="card">
+
+    <p>Une t&acirc;che programm&eacute;e, c'est une phrase que Claude ex&eacute;cute &agrave; une heure donn&eacute;e, sans que vous ouvriez quoi que ce soit. Trois t&acirc;ches suffisent pour cet agent, et elles se cr&eacute;ent en une phrase chacune.</p>
+
+    <h3>La t&acirc;che principale &mdash; les devis arriv&eacute;s, chaque matin</h3>
+    <div class="codewrap"><button class="copybtn" type="button">Copier</button><div class="code"><span class="kw">Cr&eacute;e une t&acirc;che programm&eacute;e chaque matin &agrave; 8h30 qui v&eacute;rifie mes consultations en cours et me signale les devis arriv&eacute;s depuis hier.</span></div></div>
+
+    <h3>La t&acirc;che du lundi &mdash; les fournisseurs en retard</h3>
+    <div class="codewrap"><button class="copybtn" type="button">Copier</button><div class="code"><span class="kw">Cr&eacute;e une t&acirc;che programm&eacute;e chaque lundi &agrave; 9h qui liste les fournisseurs qui n'ont pas r&eacute;pondu dans le d&eacute;lai annonc&eacute; et pr&eacute;pare les relances en brouillon.</span></div></div>
+
+    <h3>La t&acirc;che de d&eacute;cision &mdash; la veille de l'&eacute;ch&eacute;ance</h3>
+    <div class="codewrap"><button class="copybtn" type="button">Copier</button><div class="code"><span class="kw">Cr&eacute;e une t&acirc;che programm&eacute;e qui, la veille de chaque date de d&eacute;cision, me rappelle la d&eacute;cision &agrave; prendre et ressort le comparatif.</span></div></div>
+
+    <h3>G&eacute;rer vos t&acirc;ches</h3>
+    <div class="vg">
+      <div class="vc"><div class="vt">&#128203; Les lister</div><div class="vd">&laquo;&nbsp;montre-moi mes t&acirc;ches programm&eacute;es&nbsp;&raquo;</div></div>
+      <div class="vc"><div class="vt">&#128336; En d&eacute;caler une</div><div class="vd">&laquo;&nbsp;passe ma t&acirc;che du lundi &agrave; 14h&nbsp;&raquo;</div></div>
+      <div class="vc"><div class="vt">&#9199;&#65039; En suspendre une</div><div class="vd">&laquo;&nbsp;mets en pause ma t&acirc;che de relance&nbsp;&raquo;</div></div>
+      <div class="vc"><div class="vt">&#128465;&#65039; En supprimer une</div><div class="vd">&laquo;&nbsp;supprime ma t&acirc;che du matin&nbsp;&raquo;</div></div>
+    </div>
+
+    <div class="tip warn">
+      <span class="tip-i">&#9889;</span>
+      <div class="tip-c"><strong>Commencez par une seule</strong>Celle du lundi. C'est celle qui rapporte le plus tout de suite&nbsp;: une relance faite le jour o&ugrave; elle est due raccourcit une consultation de plusieurs jours. Ajoutez les deux autres quand celle-l&agrave; tourne.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== CH 07 ===== -->
+<div class="ch" id="ch7">
+  <div class="ch-head"><span class="ch-num">07</span><h2>Ce qu'il ne fait pas</h2></div>
+  <div class="card">
+
+    <p>Trois interdits, &eacute;crits dans le fichier d'instructions. Ils ne se configurent pas, et c'est voulu.</p>
+
+    <div class="vg">
+      <div class="vc"><div class="vt">&#128683; Il n'estime jamais un poste absent</div><div class="vd">Si un devis ne chiffre pas un poste, il le marque absent. Il ne met pas &laquo;&nbsp;environ 2&nbsp;000&nbsp;&euro;&nbsp;&raquo; pour que le total soit comparable.</div></div>
+      <div class="vc"><div class="vt">&#128683; Il ne d&eacute;signe pas le fournisseur retenu</div><div class="vd">Il classe, il explique les &eacute;carts, il signale les risques. Le choix reste le v&ocirc;tre, et il porte votre nom.</div></div>
+      <div class="vc"><div class="vt">&#128683; Il n'envoie aucun mail</div><div class="vd">Tout reste en brouillon. Aucun fournisseur n'est contact&eacute; sans que vous ayez cliqu&eacute;.</div></div>
+    </div>
+
+    <h3>Pourquoi il ne d&eacute;signe pas le gagnant</h3>
+    <p>Parce qu'un choix de fournisseur contient des &eacute;l&eacute;ments qui ne sont dans aucun devis&nbsp;: la relation avec le commercial, ce que vous savez de leur SAV, le fait que l'un d'eux a d&eacute;pann&eacute; votre voisin un dimanche. Un agent qui tranche &agrave; votre place vous priverait de ces &eacute;l&eacute;ments-l&agrave;, et vous laisserait justifier une d&eacute;cision que vous n'avez pas prise.</p>
+
+    <div class="tip info">
+      <span class="tip-i">&#128161;</span>
+      <div class="tip-c"><strong>Ce qu'il fait &agrave; la place</strong>Il vous donne la phrase que vous n'auriez pas &eacute;crite. Sur l'exemple du chapitre&nbsp;01&nbsp;: &laquo;&nbsp;l'offre C affiche le total le plus bas, mais deux postes chiffr&eacute;s chez A et chez B n'y figurent pas&nbsp;; tant qu'ils ne sont pas chiffr&eacute;s, les trois totaux ne sont pas comparables&nbsp;&raquo;. Il ne vous dit pas qui gagne&nbsp;: il vous dit ce qu'il faut demander avant de pouvoir trancher.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== CH 08 ===== -->
+<div class="ch" id="ch8">
+  <div class="ch-head"><span class="ch-num">08</span><h2>Si &ccedil;a ne marche pas</h2></div>
+  <div class="card">
+
+    <h3>Il refuse d'&eacute;crire le cahier des charges</h3>
+    <p>Il manque une information qu'il ne veut pas inventer&nbsp;: le plus souvent le p&eacute;rim&egrave;tre ou la date butoir. Il vous le dit. R&eacute;pondez, m&ecirc;me approximativement&nbsp;: &laquo;&nbsp;je ne sais pas encore, mets un blanc&nbsp;&raquo; est une r&eacute;ponse valable.</p>
+
+    <h3>Le comparatif met tout dans un seul poste</h3>
+    <p>C'est que les devis re&ccedil;us sont des forfaits globaux, sans d&eacute;tail. L'agent ne peut pas d&eacute;composer ce qui n'a pas &eacute;t&eacute; d&eacute;compos&eacute;. Demandez-lui de pr&eacute;parer une demande de d&eacute;tail aux fournisseurs&nbsp;: c'est une demande normale, et elle est souvent accept&eacute;e.</p>
+
+    <h3>Il ne retrouve pas les devis re&ccedil;us</h3>
+    <p>V&eacute;rifiez deux choses&nbsp;: que votre messagerie est bien connect&eacute;e, et que les devis sont en pi&egrave;ce jointe lisible. Un devis photographi&eacute; de travers est souvent illisible&nbsp;; redemandez-le en PDF, c'est plus rapide que de le retaper.</p>
+
+    <h3>Les relances sont trop s&egrave;ches</h3>
+    <p>Dites-le-lui&nbsp;: &laquo;&nbsp;mes relances doivent &ecirc;tre plus chaleureuses, je travaille avec ces gens depuis des ann&eacute;es&nbsp;&raquo;. Il l'&eacute;crit dans le contexte, et toutes les relances suivantes suivent ce ton.</p>
+
+    <h3>Un fournisseur r&eacute;pond &laquo;&nbsp;on ne r&eacute;pond pas aux consultations &eacute;crites&nbsp;&raquo;</h3>
+    <p>&Ccedil;a arrive, surtout chez les tr&egrave;s petites structures. Deux options&nbsp;: vous prenez le devis au t&eacute;l&eacute;phone et vous le dictez &agrave; l'agent, qui le remet au format commun&nbsp;; ou vous consid&eacute;rez que c'est un signal sur leur fa&ccedil;on de travailler, et vous consultez ailleurs. Les deux se d&eacute;fendent.</p>
+
+    <h3>Le r&eacute;flexe qui r&egrave;gle le reste</h3>
+    <p>Dites-lui ce qui ne va pas, en langage courant, dans la conversation. &laquo;&nbsp;Ce comparatif est illisible&nbsp;&raquo;, &laquo;&nbsp;tu as oubli&eacute; le quatri&egrave;me fournisseur&nbsp;&raquo;, &laquo;&nbsp;mets les d&eacute;lais en premi&egrave;re colonne&nbsp;&raquo;. Il corrige, et si la remarque vaut pour toutes les prochaines fois, demandez-lui de l'&eacute;crire dans le contexte.</p>
+
+  </div>
+</div>
+
+<!-- ===== CH 09 ===== -->
+<div class="ch" id="ch9">
+  <div class="ch-head"><span class="ch-num">09</span><h2>R&eacute;cap et exercices</h2></div>
+  <div class="card">
+
+    <h3>Ce que vous savez maintenant faire</h3>
+    <div class="vg">
+      <div class="vc"><div class="vt">&#9989; Installer l'agent</div><div class="vd">D&eacute;poser le fichier d'instructions, coller le prompt d'initialisation, valider chaque cr&eacute;ation.</div></div>
+      <div class="vc"><div class="vt">&#9989; Reconna&icirc;tre les 4 briques</div><div class="vd">Skill, contexte, connecteur, t&acirc;che programm&eacute;e.</div></div>
+      <div class="vc"><div class="vt">&#9989; Cadrer un besoin</div><div class="vd">L'existant, la limite de prestation, la date butoir, les crit&egrave;res &eacute;liminatoires.</div></div>
+      <div class="vc"><div class="vt">&#9989; Annoncer vos crit&egrave;res</div><div class="vd">Et comprendre pourquoi &ccedil;a change les devis que vous recevez.</div></div>
+      <div class="vc"><div class="vt">&#9989; Lire un comparatif</div><div class="vd">Rep&eacute;rer un poste absent, et ne jamais le confondre avec un poste gratuit.</div></div>
+      <div class="vc"><div class="vt">&#9989; Passer en automatique</div><div class="vd">Cr&eacute;er, lister, d&eacute;caler et supprimer une t&acirc;che.</div></div>
+    </div>
+
+    <h3>Exercices pratiques</h3>
+    <p>Quatre exercices de difficult&eacute; croissante.</p>
+
+    <h4>&#128994; Facile &mdash; Un cahier des charges sur un achat pass&eacute; (&asymp; 20 min)</h4>
+    <p>Prenez un achat que vous avez d&eacute;j&agrave; fait et demandez le cahier des charges comme s'il &eacute;tait &agrave; venir. Comparez avec ce que vous aviez r&eacute;ellement demand&eacute; &agrave; l'&eacute;poque&nbsp;: les &eacute;carts vous diront ce que vous aviez laiss&eacute; dans le flou.</p>
+
+    <h4>&#128993; Moyen &mdash; La pond&eacute;ration honn&ecirc;te (&asymp; 15 min)</h4>
+    <p>Demandez-lui de vous faire pond&eacute;rer vos crit&egrave;res jusqu'&agrave; 100. L'exercice est inconfortable&nbsp;: il vous oblige &agrave; dire combien vaut vraiment le d&eacute;lai face au prix. C'est pr&eacute;cis&eacute;ment pour &ccedil;a qu'il est utile.</p>
+
+    <h4>&#128308; Difficile &mdash; Une consultation compl&egrave;te (&asymp; 1h, puis deux semaines)</h4>
+    <p>Lancez une vraie consultation &agrave; trois fournisseurs, de bout en bout. &Agrave; la fin, comptez combien de postes &eacute;taient absents d'au moins un devis. C'est le chiffre qui vous dira ce que vous auriez pay&eacute; en plus sans comparatif.</p>
+
+    <h4>&#128995; Exploration &mdash; Le devis le moins cher qui ne l'est pas (&asymp; 20 min)</h4>
+    <p>Reprenez trois devis d'un achat pass&eacute; et faites-les ramener au m&ecirc;me p&eacute;rim&egrave;tre. Regardez si votre classement d'alors tient toujours, et notez les postes qu'aucun des trois ne chiffrait. C'est ce que vous aviez accept&eacute; sans le savoir.</p>
+
+    <div class="analogy">
+      <div class="al">&#128640; Et maintenant&nbsp;?</div>
+      <p>Consultation fournisseurs est le premier des trois agents du kit Achats. Une fois le fournisseur choisi, <strong>Contr&ocirc;le fournisseur</strong> r&eacute;unit les pi&egrave;ces que la loi vous demande de v&eacute;rifier, et <strong>Contrats et abonnements</strong> surveille ce que vous payez tous les mois sans y penser. Les trois lisent le m&ecirc;me contexte.</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div class="ch" id="ch10">
+  <div class="ch-head"><span class="ch-num">10</span><h2>Quiz de fin</h2></div>
+  <div class="card">
+    <p>Trois questions pour v&eacute;rifier que l'essentiel est pass&eacute;. Cliquez sur la r&eacute;ponse qui vous semble juste&nbsp;: la correction s'affiche aussit&ocirc;t.</p>
+    <div class="quiz"><div class="q"><div class="qq"><span class="qn">Q1</span>Un devis ne chiffre pas le poste &laquo;&nbsp;mise &agrave; la terre&nbsp;&raquo;. Que fait l'agent&nbsp;?</div><button class="opt" type="button" data-ok="0">Il l'estime au prix moyen des deux autres devis</button><button class="opt" type="button" data-ok="1">Il le marque absent et vous signale le p&eacute;rim&egrave;tre incomparable</button><button class="opt" type="button" data-ok="0">Il le compte &agrave; z&eacute;ro</button><div class="exp">Il ne comble jamais un trou par une estimation. Un poste absent est signal&eacute; comme tel, et la question repart chez le fournisseur. Un chiffre invent&eacute; dans un comparatif devient une mauvaise surprise sur la facture.</div></div><div class="q"><div class="qq"><span class="qn">Q2</span>&Agrave; quel moment les crit&egrave;res de choix sont-ils annonc&eacute;s&nbsp;?</div><button class="opt" type="button" data-ok="0">Au moment de comparer les devis re&ccedil;us</button><button class="opt" type="button" data-ok="0">Jamais, ils restent internes</button><button class="opt" type="button" data-ok="1">D&egrave;s la consultation, dans le mail envoy&eacute; aux fournisseurs</button><div class="exp">Les crit&egrave;res partent avec le cahier des charges. Un fournisseur qui sait que le d&eacute;lai p&egrave;se 30&nbsp;% ne chiffre pas la m&ecirc;me offre&nbsp;: annoncer les crit&egrave;res am&eacute;liore les devis re&ccedil;us.</div></div><div class="q"><div class="qq"><span class="qn">Q3</span>L'agent a produit le comparatif. Qui choisit le fournisseur&nbsp;?</div><button class="opt" type="button" data-ok="0">L'agent, selon la pond&eacute;ration</button><button class="opt" type="button" data-ok="1">Vous&nbsp;: il classe et explique, il ne d&eacute;signe pas</button><button class="opt" type="button" data-ok="0">L'agent, sauf si vous le contredisez</button><div class="exp">Un choix de fournisseur contient ce qui n'est dans aucun devis&nbsp;: la relation, le SAV, l'historique. L'agent donne l'&eacute;cart &agrave; p&eacute;rim&egrave;tre &eacute;gal et les points &agrave; clarifier&nbsp;; la d&eacute;cision porte votre nom.</div></div></div>
+    <div class="qscore">Score : 0 / 0</div>
+  </div>
+</div>
+<div class="footer">
+  <p><strong>&#128218; Guide agent &mdash; Consultation fournisseurs</strong></p>
+  <p>Kit Achats &middot; Formation Studeria &middot; Octobre 2026</p>
+</div>
+
+</div><!-- /content -->
+</div><!-- /main -->
+
+<button class="top" aria-label="Haut de page">&#8593;</button>
+
+<script>
+(function(){
+  var bar=document.querySelector('.progress'),top=document.querySelector('.top');
+  var links=[].slice.call(document.querySelectorAll('.sidebar a[href^="#"]'));
+  var chs=[].slice.call(document.querySelectorAll('.ch'));
+  function onScroll(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    bar.style.width=(h>0?window.scrollY/h*100:0)+'%';
+    top.classList.toggle('show',window.scrollY>600);
+    var cur=null;
+    chs.forEach(function(c){if(c.getBoundingClientRect().top<160)cur=c.id});
+    links.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+cur)});
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+  top.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target)}})},
+      {rootMargin:'0px 0px -60px 0px'});
+    chs.forEach(function(c){io.observe(c)});
+  } else { chs.forEach(function(c){c.classList.add('vis')}); }
+  links.forEach(function(a){a.addEventListener('click',function(){
+    document.querySelector('.sidebar').classList.remove('open')})});
+
+  /* bouton copier */
+  document.querySelectorAll('.copybtn').forEach(function(b){
+    b.addEventListener('click',function(){
+      var code=b.parentNode.querySelector('.code');
+      var t=code.innerText.replace(/^\/\/.*\n?/,'').trim();
+      var done=function(){b.textContent='Copie !';b.classList.add('done');
+        setTimeout(function(){b.textContent='Copier';b.classList.remove('done')},2000)};
+      if(navigator.clipboard&&window.isSecureContext){
+        navigator.clipboard.writeText(t).then(done,fallback);
+      } else { fallback(); }
+      function fallback(){
+        var ta=document.createElement('textarea');ta.value=t;
+        ta.style.position='fixed';ta.style.opacity=0;document.body.appendChild(ta);
+        ta.select();try{document.execCommand('copy');done()}catch(e){}
+        document.body.removeChild(ta);
+      }
+    });
+  });
+
+  /* quiz */
+  var qz=document.querySelector('.quiz');
+  if(qz){
+    var total=qz.querySelectorAll('.q').length,good=0,done=0;
+    var sc=document.querySelector('.qscore');
+    qz.querySelectorAll('.q').forEach(function(q){
+      q.querySelectorAll('button.opt').forEach(function(b){
+        b.addEventListener('click',function(){
+          if(q.classList.contains('answered'))return;
+          q.classList.add('answered');done++;
+          var ok=b.dataset.ok==='1';if(ok)good++;
+          b.classList.add(ok?'good':'bad');
+          if(!ok)q.querySelector('button.opt[data-ok="1"]').classList.add('good');
+          if(sc)sc.textContent=done<total?('Score : '+good+' / '+done+'  \u2014  '+(total-done)+' question(s) restante(s)')
+            :('Score final : '+good+' / '+total+(good===total?'  \u2014  parfait !':'  \u2014  relisez les chapitres concernes.'));
+        });
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
